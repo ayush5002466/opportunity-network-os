@@ -1,284 +1,259 @@
-
+import argparse
 import json
+import os
+import re
+import smtplib
+import sqlite3
 import sys
+from datetime import datetime, timezone
+from email.message import EmailMessage
 from pathlib import Path
-from urllib.error import HTTPError, URLError
-from urllib.request import Request, urlopen
+from urllib.parse import urlparse
 
+import requests
 
-ROOT = Path(__file__).resolve().parent.parent
-CONFIG_PATH = ROOT / "config" / "boards.json"
-DATA_DIR = ROOT / "data"
-JOBS_PATH = DATA_DIR / "jobs.json"
+ROOT = Path(__file__).resolve().parents[1]
+DATA = ROOT / "data"
+CONFIG = ROOT / "config" / "boards.json"
+STATE = DATA / "jobs.json"
+DB = DATA / "tracker.db"
+DATA.mkdir(exist_ok=True)
 
-USER_AGENT = "OpportunityNetworkOS/1.0"
+def now_iso():
+    return datetime.now(timezone.utc).isoformat()
 
+def db_conn():
+    conn = sqlite3.connect(DB)
+    conn.row_factory = sqlite3.Row
+    conn.execute("""
+      CREATE TABLE IF NOT EXISTS applications (
+        job_id TEXT PRIMARY KEY, title TEXT NOT NULL, company TEXT NOT NULL,
+        url TEXT NOT NULL, status TEXT NOT NULL DEFAULT 'discovered',
+        notes TEXT DEFAULT '', updated_at TEXT NOT NULL
+      )
+    """)
+    conn.execute("""
+      CREATE TABLE IF NOT EXISTS contacts (
+        id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT NOT NULL,
+        organization TEXT DEFAULT '', channel TEXT DEFAULT '',
+        reason TEXT DEFAULT '', status TEXT DEFAULT 'to_reach_out',
+        follow_up TEXT DEFAULT '', created_at TEXT NOT NULL
+      )
+    """)
+    conn.commit()
+    return conn
 
 def load_config():
-    """Load the JSON configuration."""
-    if not CONFIG_PATH.exists():
-        raise FileNotFoundError(
-            f"Configuration file not found: {CONFIG_PATH}"
-        )
+    if not CONFIG.exists():
+        raise SystemExit("Missing config/boards.json. Copy config/boards.example.json to config/boards.json first.")
+    return json.loads(CONFIG.read_text(encoding="utf-8"))
 
-    with CONFIG_PATH.open("r", encoding="utf-8") as file:
-        config = json.load(file)
+def load_state():
+    if not STATE.exists():
+        return {}
+    try:
+        return json.loads(STATE.read_text(encoding="utf-8"))
+    except json.JSONDecodeError:
+        return {}
 
-    if not isinstance(config, dict):
-        raise ValueError("Configuration must be a JSON object.")
+def fetch_greenhouse(company, token):
+    url = f"https://boards-api.greenhouse.io/v1/boards/{token}/jobs?content=true"
+    r = requests.get(url, timeout=25)
+    r.raise_for_status()
+    result = []
+    for j in r.json().get("jobs", []):
+        result.append({
+            "id": f"gh:{token}:{j.get('id')}",
+            "company": company,
+            "title": j.get("title", ""),
+            "location": (j.get("location") or {}).get("name", ""),
+            "url": j.get("absolute_url", ""),
+            "updated_at": j.get("updated_at", ""),
+            "description": re.sub(r"<[^>]+>", " ", j.get("content", "") or ""),
+            "source": "Greenhouse"
+        })
+    return result
 
-    for key in ("keywords", "exclude_keywords"):
-        if not isinstance(config.get(key, []), list):
-            raise ValueError(f"'{key}' must be a list.")
-
-    return config
-
-
-def clean(job):
-    """Keep only compact fields needed for storage."""
-    fields = (
-        "id",
-        "company",
-        "title",
-        "location",
-        "url",
-        "updated_at",
-        "source",
-    )
-
-    return {
-        field: job.get(field, "")
-        for field in fields
-    }
-
+def fetch_lever(company, site):
+    url = f"https://api.lever.co/v0/postings/{site}?mode=json"
+    r = requests.get(url, timeout=25)
+    r.raise_for_status()
+    result = []
+    for j in r.json():
+        cats = j.get("categories") or {}
+        desc = " ".join([j.get("descriptionPlain", ""), j.get("additional", "") or ""])
+        result.append({
+            "id": f"lever:{site}:{j.get('id')}",
+            "company": company,
+            "title": j.get("text", ""),
+            "location": cats.get("location", ""),
+            "url": j.get("hostedUrl", ""),
+            "updated_at": j.get("createdAt", ""),
+            "description": re.sub(r"<[^>]+>", " ", desc),
+            "source": "Lever"
+        })
+    return result
 
 def is_relevant(job, cfg):
-    """Filter roles using target keywords and exclusion rules."""
-    title = str(job.get("title") or "").strip().lower()
-    description = str(job.get("description") or "").lower()
+    haystack = f"{job.get('title','')} {job.get('description','')}".lower()
+    keywords = [k.lower() for k in cfg.get("keywords", [])]
+    excludes = [k.lower() for k in cfg.get("exclude_keywords", [])]
+    return any(k in haystack for k in keywords) and not any(x in job.get("title", "").lower() for x in excludes)
 
-    if not title:
+def clean(job):
+    # Keep state compact; source descriptions may be long and can change frequently.
+    return {k: job.get(k, "") for k in ("id", "company", "title", "location", "url", "updated_at", "source")}
+
+def send_telegram(text):
+    token = os.getenv("TELEGRAM_BOT_TOKEN")
+    chat_id = os.getenv("TELEGRAM_CHAT_ID")
+    if not token or not chat_id:
         return False
-
-    excluded_title_phrases = [
-        "recruiter",
-        "recruiting",
-        "talent acquisition",
-        "solutions architect",
-        "technical program manager",
-        "program manager",
-        "strategy and operations",
-        "operations lead",
-        "account executive",
-        "sales development",
-        "customer success manager",
-    ]
-
-    if any(phrase in title for phrase in excluded_title_phrases):
-        return False
-
-    excludes = [
-        str(item).strip().lower()
-        for item in cfg.get("exclude_keywords", [])
-        if str(item).strip()
-    ]
-
-    if any(item in title for item in excludes):
-        return False
-
-    keywords = [
-        str(item).strip().lower()
-        for item in cfg.get("keywords", [])
-        if str(item).strip()
-    ]
-
-    haystack = f"{title} {description}"
-    return any(keyword in haystack for keyword in keywords)
-
-
-def fetch_json(url):
-    """Fetch JSON from a public job-board endpoint."""
-    request = Request(
-        url,
-        headers={
-            "User-Agent": USER_AGENT,
-            "Accept": "application/json",
-        },
+    response = requests.post(
+        f"https://api.telegram.org/bot{token}/sendMessage",
+        json={"chat_id": chat_id, "text": text[:3900], "disable_web_page_preview": True},
+        timeout=20
     )
+    response.raise_for_status()
+    return True
 
-    with urlopen(request, timeout=20) as response:
-        return json.loads(response.read().decode("utf-8"))
+def send_email(subject, body):
+    host = os.getenv("SMTP_HOST")
+    user = os.getenv("SMTP_USER")
+    password = os.getenv("SMTP_PASSWORD")
+    sender = os.getenv("ALERT_FROM", user or "")
+    recipient = os.getenv("ALERT_TO")
+    if not all([host, user, password, sender, recipient]):
+        return False
+    msg = EmailMessage()
+    msg["Subject"], msg["From"], msg["To"] = subject, sender, recipient
+    msg.set_content(body)
+    port = int(os.getenv("SMTP_PORT", "587"))
+    with smtplib.SMTP(host, port, timeout=25) as server:
+        server.starttls()
+        server.login(user, password)
+        server.send_message(msg)
+    return True
 
-
-def extract_description(content):
-    """Extract readable text from Greenhouse job content."""
-    if not content:
-        return ""
-
-    import re
-    from html import unescape
-
-    text = re.sub(r"<[^>]+>", " ", str(content))
-    text = unescape(text)
-    return " ".join(text.split())
-
-
-def discover_greenhouse(cfg):
-    """Discover jobs from configured Greenhouse company boards."""
-    discovered = []
-
-    boards = cfg.get("greenhouse", cfg.get("boards", {}))
-
-    if isinstance(boards, list):
-        board_items = [
-            (item.get("company", ""), item.get("token", ""))
-            for item in boards
-            if isinstance(item, dict)
-        ]
-    elif isinstance(boards, dict):
-        board_items = list(boards.items())
-    else:
-        return discovered
-
-    for company, token in board_items:
-        if not token or not isinstance(token, str):
-            continue
-
-        url = (
-            "https://boards-api.greenhouse.io/v1/boards/"
-            f"{token}/jobs?content=true"
-        )
-
-        try:
-            payload = fetch_json(url)
-        except (HTTPError, URLError, TimeoutError, ValueError) as error:
-            print(
-                f"[WARN] Could not fetch {company or token}: {error}",
-                file=sys.stderr,
-            )
-            continue
-
-        for item in payload.get("jobs", []):
-            location = item.get("location") or {}
-            departments = item.get("departments") or []
-
-            description = extract_description(item.get("content", ""))
-
-            job = {
-                "id": f"greenhouse:{token}:{item.get('id', '')}",
-                "company": company or token,
-                "title": item.get("title", ""),
-                "location": location.get("name", "Not specified"),
-                "url": item.get("absolute_url", ""),
-                "updated_at": item.get("updated_at", ""),
-                "source": "Greenhouse",
-                "description": description,
-                "departments": departments,
-            }
-
-            if is_relevant(job, cfg):
-                discovered.append(clean(job))
-
-    return discovered
-
-
-def load_saved_jobs():
-    """Load the previously saved job list."""
-    if not JOBS_PATH.exists():
-        return []
-
+def notify(subject, body):
+    sent = []
     try:
-        with JOBS_PATH.open("r", encoding="utf-8") as file:
-            jobs = json.load(file)
-
-        return jobs if isinstance(jobs, list) else []
-    except (json.JSONDecodeError, OSError):
-        print(
-            "[WARN] Existing jobs.json could not be read; "
-            "starting with an empty list.",
-            file=sys.stderr,
-        )
-        return []
-
-
-def save_jobs(jobs):
-    """Save jobs safely using a temporary file."""
-    DATA_DIR.mkdir(parents=True, exist_ok=True)
-    temporary_path = JOBS_PATH.with_suffix(".tmp")
-
-    with temporary_path.open("w", encoding="utf-8") as file:
-        json.dump(jobs, file, indent=2, ensure_ascii=False)
-
-    temporary_path.replace(JOBS_PATH)
-
+        if send_email(subject, body):
+            sent.append("email")
+    except Exception as exc:
+        print(f"Email delivery failed: {exc}", file=sys.stderr)
+    try:
+        if send_telegram(f"{subject}\n\n{body}"):
+            sent.append("telegram")
+    except Exception as exc:
+        print(f"Telegram delivery failed: {exc}", file=sys.stderr)
+    print("Notifications sent: " + (", ".join(sent) if sent else "none (configure credentials)"))
 
 def discover():
-    """Fetch, filter, deduplicate, and save current matching jobs."""
-    config = load_config()
-    existing_jobs = load_saved_jobs()
+    cfg = load_config()
+    old = load_state()
+    found, errors = [], []
+    for item in cfg.get("greenhouse", []):
+        try:
+            found.extend(fetch_greenhouse(item["company"], item["token"]))
+        except Exception as e:
+            errors.append(f"Greenhouse {item.get('company','?')}: {e}")
+    for item in cfg.get("lever", []):
+        try:
+            found.extend(fetch_lever(item["company"], item["site"]))
+        except Exception as e:
+            errors.append(f"Lever {item.get('company','?')}: {e}")
+    relevant = [j for j in found if j.get("url") and is_relevant(j, cfg)]
+    current = {j["id"]: clean(j) for j in relevant}
+    new_jobs = [j for j in relevant if j["id"] not in old]
+    STATE.write_text(json.dumps(current, indent=2, ensure_ascii=False), encoding="utf-8")
 
-    existing_by_id = {
-        str(job.get("id")): job
-        for job in existing_jobs
-        if job.get("id")
-    }
+    conn = db_conn()
+    for job in relevant:
+        conn.execute("""
+          INSERT OR IGNORE INTO applications(job_id,title,company,url,status,notes,updated_at)
+          VALUES(?,?,?,?,?,?,?)
+        """, (job["id"], job["title"], job["company"], job["url"], "discovered", "", now_iso()))
+    conn.commit()
+    conn.close()
 
-    fetched_jobs = discover_greenhouse(config)
-
-    for job in fetched_jobs:
-        job_id = str(job.get("id") or "")
-        if job_id:
-            existing_by_id[job_id] = job
-
-    jobs = list(existing_by_id.values())
-    jobs.sort(
-        key=lambda item: (
-            str(item.get("company", "")).lower(),
-            str(item.get("title", "")).lower(),
-        )
-    )
-
-    save_jobs(jobs)
-
-    print(f"Fetched matching jobs: {len(fetched_jobs)}")
-    print(f"Total unique saved jobs: {len(jobs)}")
-    print(f"Saved to: {JOBS_PATH}")
-
-    return jobs
-
+    if new_jobs:
+        lines = []
+        for j in new_jobs[:30]:
+            lines.append(f"- {j['title']} — {j['company']} | {j['location']}\n  {j['url']}\n  Source: {j['source']}")
+        body = f"New potentially relevant public listings: {len(new_jobs)}\n\n" + "\n\n".join(lines)
+        body += "\n\nVerify graduation year, work authorization, experience, deadline, and sponsorship on the official posting."
+        notify(f"Job Radar: {len(new_jobs)} new listing(s)", body)
+    else:
+        print("No new relevant listings.")
+    if errors:
+        print("\nSource errors:\n" + "\n".join(errors), file=sys.stderr)
+    print(f"Fetched {len(found)} listings; relevant {len(relevant)}; new {len(new_jobs)}.")
+    return 1 if errors and not found else 0
 
 def list_jobs():
-    """Print saved jobs."""
-    jobs = load_saved_jobs()
+    state = load_state()
+    for j in sorted(state.values(), key=lambda x: (x.get("company",""), x.get("title",""))):
+        print(f"{j['id']} | {j['company']} | {j['title']} | {j.get('location','')} | {j['url']}")
 
-    if not jobs:
-        print("No saved jobs. Run discovery first.")
-        return
+def add_application(args):
+    conn = db_conn()
+    conn.execute("""
+      INSERT INTO applications(job_id,title,company,url,status,notes,updated_at)
+      VALUES(?,?,?,?,?,?,?)
+      ON CONFLICT(job_id) DO UPDATE SET status=excluded.status, notes=excluded.notes, updated_at=excluded.updated_at
+    """, (args.job_id, args.title or args.job_id, args.company or "Unknown", args.url or "", args.status, args.notes or "", now_iso()))
+    conn.commit()
+    conn.close()
+    print(f"Saved {args.job_id} as {args.status}.")
 
-    for index, job in enumerate(jobs, start=1):
-        print(
-            f"{index}. {job.get('title', 'Untitled')} "
-            f"| {job.get('company', 'Unknown company')} "
-            f"| {job.get('location', 'Not specified')}"
-        )
-        print(f"   {job.get('url', '')}")
+def applications():
+    conn = db_conn()
+    rows = conn.execute("SELECT job_id,title,company,status,url,updated_at FROM applications ORDER BY updated_at DESC").fetchall()
+    conn.close()
+    for r in rows:
+        print(f"{r['status']:12} | {r['company']} | {r['title']} | {r['job_id']} | {r['url']}")
 
+def add_contact(args):
+    conn = db_conn()
+    conn.execute("INSERT INTO contacts(name,organization,channel,reason,status,follow_up,created_at) VALUES(?,?,?,?,?,?,?)",
+                 (args.name, args.organization or "", args.channel or "", args.reason or "", args.status, args.follow_up or "", now_iso()))
+    conn.commit()
+    conn.close()
+    print(f"Saved contact: {args.name}")
+
+def contacts():
+    conn = db_conn()
+    rows = conn.execute("SELECT name,organization,channel,reason,status,follow_up FROM contacts ORDER BY id DESC").fetchall()
+    conn.close()
+    for r in rows:
+        print(f"{r['status']:14} | {r['name']} | {r['organization']} | {r['channel']} | reason: {r['reason']} | follow-up: {r['follow_up']}")
 
 def main():
-    command = sys.argv[1].lower() if len(sys.argv) > 1 else "discover"
-
-    try:
-        if command == "discover":
-            discover()
-        elif command == "list":
-            list_jobs()
-        else:
-            print("Usage: python -m src.radar [discover|list]")
-            raise SystemExit(2)
-    except (OSError, ValueError, json.JSONDecodeError) as error:
-        print(f"[ERROR] {error}", file=sys.stderr)
-        raise SystemExit(1) from error
-
+    p = argparse.ArgumentParser(description="Opportunity & Network OS")
+    sub = p.add_subparsers(dest="command", required=True)
+    sub.add_parser("discover")
+    sub.add_parser("list")
+    sub.add_parser("applications")
+    sub.add_parser("contacts")
+    a = sub.add_parser("add-application")
+    a.add_argument("--job-id", required=True)
+    a.add_argument("--status", required=True, choices=["discovered","saved","to_apply","applied","assessment","interview","rejected","offer","closed"])
+    a.add_argument("--title")
+    a.add_argument("--company")
+    a.add_argument("--url")
+    a.add_argument("--notes")
+    c = sub.add_parser("add-contact")
+    c.add_argument("--name", required=True)
+    c.add_argument("--organization")
+    c.add_argument("--channel", help="Public profile, community, or event")
+    c.add_argument("--reason", help="Specific genuine technical overlap")
+    c.add_argument("--status", default="to_reach_out", choices=["to_reach_out","contacted","replied","follow_up","connected","no_response","do_not_contact"])
+    c.add_argument("--follow-up")
+    args = p.parse_args()
+    {"discover": discover, "list": list_jobs, "applications": applications,
+     "contacts": contacts, "add-application": lambda: add_application(args),
+     "add-contact": lambda: add_contact(args)}[args.command]()
 
 if __name__ == "__main__":
     main()
