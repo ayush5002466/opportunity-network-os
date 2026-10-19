@@ -38,9 +38,13 @@
   ],
   "exclude_keywords": [
     "senior",
-    "staff engineer",
-    "principal engineer",
+    "staff",
+    "principal",
     "director",
+    "manager",
+    "head of",
+    "vice president",
+    "vp ",
     "10+ years",
     "8+ years",
     "7+ years"
