@@ -7,33 +7,28 @@ const description = document.querySelector("#empty-description");
 const reset = document.querySelector("#reset-filters");
 
 function updatePreview() {
-  const query = search.value.trim();
-  const type = typeFilter.value;
-  const focus = focusFilter.value;
+  const selected = [];
 
-  const hasFilters =
-    query !== "" ||
-    type !== "all" ||
-    focus !== "all";
-
-  if (hasFilters) {
-    const filters = [];
-
-    if (query) filters.push(`Search: "${query}"`);
-    if (type !== "all") filters.push(`Type: ${type}`);
-    if (focus !== "all") filters.push(`Focus: ${focus}`);
-
-    title.textContent = "Filters selected";
-    description.textContent =
-      filters.join(" · ") +
-      ". These selections are ready for integration with live opportunity data. No live results are available yet.";
-  } else {
-    title.textContent =
-      "Your opportunity feed is ready to connect";
-
-    description.textContent =
-      "Connect the Python radar to display real opportunities, official application links, eligibility and deadlines.";
+  if (search.value.trim()) {
+    selected.push(`Search: ${search.value.trim()}`);
   }
+
+  if (typeFilter.value !== "all") {
+    selected.push(`Type: ${typeFilter.value}`);
+  }
+
+  if (focusFilter.value !== "all") {
+    selected.push(`Focus: ${focusFilter.value}`);
+  }
+
+  title.textContent = selected.length
+    ? "Your selected filters"
+    : "Your opportunity feed is ready to connect";
+
+  description.textContent = selected.length
+    ? selected.join(" | ") +
+      ". Live opportunity results are not connected yet."
+    : "Connect the Python radar to display real opportunities, official application links, eligibility and deadlines.";
 }
 
 search.addEventListener("input", updatePreview);
