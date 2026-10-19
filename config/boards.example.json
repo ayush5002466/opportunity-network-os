@@ -1,0 +1,47 @@
+{
+  "greenhouse": [
+    {
+      "company": "Example Company",
+      "token": "replace_with_greenhouse_board_token"
+    }
+  ],
+  "lever": [
+    {
+      "company": "Example Company",
+      "site": "replace-with-lever-site"
+    }
+  ],
+  "keywords": [
+    "software engineer",
+    "software engineering",
+    "backend",
+    "java developer",
+    "full stack",
+    "platform engineer",
+    "devops",
+    "qa automation",
+    "machine learning",
+    "ai engineer",
+    "data engineer",
+    "security engineer",
+    "research engineer",
+    "research intern",
+    "software intern",
+    "apprentice",
+    "apprenticeship",
+    "graduate engineer trainee",
+    "new grad",
+    "early careers",
+    "fellowship",
+    "open source"
+  ],
+  "exclude_keywords": [
+    "senior",
+    "staff engineer",
+    "principal engineer",
+    "director",
+    "10+ years",
+    "8+ years",
+    "7+ years"
+  ]
+}
