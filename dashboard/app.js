@@ -1,3 +1,4 @@
+
 const search = document.querySelector("#search");
 const typeFilter = document.querySelector("#type-filter");
 const focusFilter = document.querySelector("#focus-filter");
@@ -6,16 +7,44 @@ const description = document.querySelector("#empty-description");
 const reset = document.querySelector("#reset-filters");
 
 function updatePreview() {
-  const hasFilters = Boolean(search.value.trim()) || typeFilter.value !== "all" || focusFilter.value !== "all";
-  title.textContent = hasFilters ? "No connected opportunities match these filters" : "Your opportunity feed is ready to connect";
-  description.textContent = hasFilters
-    ? "These filters are ready for the live feed integration. No live opportunity data is connected yet, so this preview cannot return matching openings."
-    : "Once the radar data source is integrated, matching opportunities will appear here with official links, eligibility checks and deadline details.";
+  const query = search.value.trim();
+  const type = typeFilter.value;
+  const focus = focusFilter.value;
+
+  const hasFilters =
+    query !== "" ||
+    type !== "all" ||
+    focus !== "all";
+
+  if (hasFilters) {
+    const filters = [];
+
+    if (query) filters.push(`Search: "${query}"`);
+    if (type !== "all") filters.push(`Type: ${type}`);
+    if (focus !== "all") filters.push(`Focus: ${focus}`);
+
+    title.textContent = "Filters selected";
+    description.textContent =
+      filters.join(" · ") +
+      ". These selections are ready for integration with live opportunity data. No live results are available yet.";
+  } else {
+    title.textContent =
+      "Your opportunity feed is ready to connect";
+
+    description.textContent =
+      "Connect the Python radar to display real opportunities, official application links, eligibility and deadlines.";
+  }
 }
-[search, typeFilter, focusFilter].forEach((control) => control.addEventListener("input", updatePreview));
+
+search.addEventListener("input", updatePreview);
+typeFilter.addEventListener("change", updatePreview);
+focusFilter.addEventListener("change", updatePreview);
+
 reset.addEventListener("click", () => {
   search.value = "";
   typeFilter.value = "all";
   focusFilter.value = "all";
   updatePreview();
 });
+
+updatePreview();
