@@ -36,7 +36,6 @@ REQUEST_TIMEOUT = 25
 def now_iso():
     return datetime.now(timezone.utc).isoformat()
 
-
 def normalize(value):
     """Normalize text for reliable comparisons."""
     return re.sub(r"\s+", " ", str(value or "")).strip().lower()
@@ -346,6 +345,53 @@ def notify(subject, body):
 # DISCOVERY
 # ==================================================
 
+
+def canonical_url(value):
+    from urllib.parse import parse_qsl, urlencode, urlsplit, urlunsplit
+
+    parts = urlsplit(str(value or "").strip())
+    if not parts.scheme or not parts.hostname:
+        return ""
+
+    tracking = {
+        "utm_source", "utm_medium", "utm_campaign",
+        "utm_term", "utm_content", "gclid", "fbclid",
+    }
+    query = urlencode([
+        (key, val)
+        for key, val in parse_qsl(parts.query, keep_blank_values=True)
+        if key.lower() not in tracking
+    ])
+    return urlunsplit((
+        parts.scheme.lower(),
+        parts.netloc.lower(),
+        parts.path.rstrip("/") or "/",
+        query,
+        "",
+    ))
+
+
+def deduplicate_jobs(jobs):
+    unique = []
+    seen_ids = set()
+    seen_urls = set()
+
+    for job in jobs:
+        job_id = str(job.get("id", "")).strip()
+        url_key = canonical_url(job.get("url", ""))
+
+        if not job_id or not url_key:
+            continue
+        if job_id in seen_ids or url_key in seen_urls:
+            continue
+
+        seen_ids.add(job_id)
+        seen_urls.add(url_key)
+        unique.append(job)
+
+    return unique
+
+
 def discover():
     cfg = load_config()
     old = load_state()
@@ -374,19 +420,23 @@ def discover():
             )
 
     relevant = [
-        job
-        for job in found
-        if job.get("url") and is_relevant(job, cfg)
+        job for job in found
+        if job.get("url") and job.get("id") and is_relevant(job, cfg)
     ]
+    relevant = deduplicate_jobs(relevant)
 
-    current = {
-        job["id"]: clean(job)
-        for job in relevant
+    current = {job["id"]: clean(job) for job in relevant}
+
+    old_urls = {
+        canonical_url(job.get("url", ""))
+        for job in old.values()
+        if isinstance(job, dict) and job.get("url")
     }
 
     new_jobs = [
         job for job in relevant
         if job["id"] not in old
+        and canonical_url(job["url"]) not in old_urls
     ]
 
     STATE.write_text(

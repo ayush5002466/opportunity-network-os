@@ -170,15 +170,6 @@
     "updated_at": "2026-10-07T19:02:27-04:00",
     "source": "Greenhouse"
   },
-  "gh:stripe:8130883": {
-    "id": "gh:stripe:8130883",
-    "company": "Stripe",
-    "title": "Software Engineer, Intern",
-    "location": "Singapore",
-    "url": "https://stripe.com/jobs/search?gh_jid=8130883",
-    "updated_at": "2026-10-07T19:02:27-04:00",
-    "source": "Greenhouse"
-  },
   "gh:stripe:8031833": {
     "id": "gh:stripe:8031833",
     "company": "Stripe",
@@ -197,21 +188,21 @@
     "updated_at": "2026-10-07T19:02:27-04:00",
     "source": "Greenhouse"
   },
+  "gh:stripe:8130883": {
+    "id": "gh:stripe:8130883",
+    "company": "Stripe",
+    "title": "Software Engineer, Intern",
+    "location": "Singapore",
+    "url": "https://stripe.com/jobs/search?gh_jid=8130883",
+    "updated_at": "2026-10-07T19:02:27-04:00",
+    "source": "Greenhouse"
+  },
   "gh:stripe:8130807": {
     "id": "gh:stripe:8130807",
     "company": "Stripe",
     "title": "Software Engineer, Intern ",
     "location": "Bucharest",
     "url": "https://stripe.com/jobs/search?gh_jid=8130807",
-    "updated_at": "2026-10-07T19:02:27-04:00",
-    "source": "Greenhouse"
-  },
-  "gh:stripe:8130805": {
-    "id": "gh:stripe:8130805",
-    "company": "Stripe",
-    "title": "Software Engineer, Intern (Summer or Winter)",
-    "location": "Toronto",
-    "url": "https://stripe.com/jobs/search?gh_jid=8130805",
     "updated_at": "2026-10-07T19:02:27-04:00",
     "source": "Greenhouse"
   },
@@ -233,39 +224,21 @@
     "updated_at": "2026-10-07T19:02:27-04:00",
     "source": "Greenhouse"
   },
-  "gh:stripe:8157838": {
-    "id": "gh:stripe:8157838",
+  "gh:stripe:8130805": {
+    "id": "gh:stripe:8130805",
     "company": "Stripe",
-    "title": "Software Engineer, New Grad",
+    "title": "Software Engineer, Intern (Summer or Winter)",
     "location": "Toronto",
-    "url": "https://stripe.com/jobs/search?gh_jid=8157838",
+    "url": "https://stripe.com/jobs/search?gh_jid=8130805",
     "updated_at": "2026-10-07T19:02:27-04:00",
     "source": "Greenhouse"
   },
-  "gh:stripe:8160776": {
-    "id": "gh:stripe:8160776",
+  "gh:stripe:8128744": {
+    "id": "gh:stripe:8128744",
     "company": "Stripe",
     "title": "Software Engineer, New Grad",
-    "location": "Singapore",
-    "url": "https://stripe.com/jobs/search?gh_jid=8160776",
-    "updated_at": "2026-10-07T19:02:27-04:00",
-    "source": "Greenhouse"
-  },
-  "gh:stripe:8130922": {
-    "id": "gh:stripe:8130922",
-    "company": "Stripe",
-    "title": "Software Engineer, New Grad",
-    "location": "Bucharest",
-    "url": "https://stripe.com/jobs/search?gh_jid=8130922",
-    "updated_at": "2026-10-07T19:02:27-04:00",
-    "source": "Greenhouse"
-  },
-  "gh:stripe:8130881": {
-    "id": "gh:stripe:8130881",
-    "company": "Stripe",
-    "title": "Software Engineer, New Grad",
-    "location": "Dublin",
-    "url": "https://stripe.com/jobs/search?gh_jid=8130881",
+    "location": "San Francisco, Seattle, New York",
+    "url": "https://stripe.com/jobs/search?gh_jid=8128744",
     "updated_at": "2026-10-07T19:02:27-04:00",
     "source": "Greenhouse"
   },
@@ -278,12 +251,39 @@
     "updated_at": "2026-10-07T19:02:27-04:00",
     "source": "Greenhouse"
   },
-  "gh:stripe:8128744": {
-    "id": "gh:stripe:8128744",
+  "gh:stripe:8157838": {
+    "id": "gh:stripe:8157838",
     "company": "Stripe",
     "title": "Software Engineer, New Grad",
-    "location": "San Francisco, Seattle, New York",
-    "url": "https://stripe.com/jobs/search?gh_jid=8128744",
+    "location": "Toronto",
+    "url": "https://stripe.com/jobs/search?gh_jid=8157838",
+    "updated_at": "2026-10-07T19:02:27-04:00",
+    "source": "Greenhouse"
+  },
+  "gh:stripe:8130881": {
+    "id": "gh:stripe:8130881",
+    "company": "Stripe",
+    "title": "Software Engineer, New Grad",
+    "location": "Dublin",
+    "url": "https://stripe.com/jobs/search?gh_jid=8130881",
+    "updated_at": "2026-10-07T19:02:27-04:00",
+    "source": "Greenhouse"
+  },
+  "gh:stripe:8130922": {
+    "id": "gh:stripe:8130922",
+    "company": "Stripe",
+    "title": "Software Engineer, New Grad",
+    "location": "Bucharest",
+    "url": "https://stripe.com/jobs/search?gh_jid=8130922",
+    "updated_at": "2026-10-07T19:02:27-04:00",
+    "source": "Greenhouse"
+  },
+  "gh:stripe:8160776": {
+    "id": "gh:stripe:8160776",
+    "company": "Stripe",
+    "title": "Software Engineer, New Grad",
+    "location": "Singapore",
+    "url": "https://stripe.com/jobs/search?gh_jid=8160776",
     "updated_at": "2026-10-07T19:02:27-04:00",
     "source": "Greenhouse"
   },
