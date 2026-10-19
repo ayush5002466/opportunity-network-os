@@ -1,39 +1,162 @@
+
 <!doctype html>
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <meta name="theme-color" content="#0b1020" />
-  <meta name="description" content="A focused dashboard for tracking early-career technology opportunities." />
+  <meta name="description" content="A dashboard for tracking early-career technology opportunities." />
   <title>Opportunity Network OS</title>
-  <link rel="stylesheet" href="/styles.css" />
-  <script src="/app.js" defer></script>
+  <link rel="stylesheet" href="./styles.css" />
+  <script src="./app.js" defer></script>
 </head>
 <body>
   <div class="shell">
     <aside class="sidebar">
-      <a class="brand" href="#"><span class="brand-mark">O</span><span>Opportunity<span class="muted">OS</span></span></a>
+      <a class="brand" href="#overview">
+        <span class="brand-mark">O</span>
+        <span>Opportunity<span class="muted">OS</span></span>
+      </a>
+
       <div class="nav-label">WORKSPACE</div>
       <a class="nav active" href="#overview">▦ <span>Overview</span></a>
       <a class="nav" href="#opportunities">◎ <span>Opportunities</span></a>
       <a class="nav" href="#workflow">↗ <span>Application tracker</span></a>
-      <div class="sidebar-bottom"><span class="status-dot"></span> Radar engine <strong>Local project</strong><p>Frontend preview · live sync not connected</p></div>
+
+      <div class="sidebar-bottom">
+        <span class="status-dot"></span> Radar engine
+        <strong>Opportunity snapshot</strong>
+        <p>Showing saved radar data when available.</p>
+      </div>
     </aside>
+
     <main class="main" id="overview">
-      <header class="topbar"><div><div class="eyebrow">YOUR CAREER COMMAND CENTER</div><h1>Opportunity radar</h1><p class="subtitle">Find the next credible step in your technical career.</p></div><div class="avatar">A</div></header>
-      <section class="welcome"><div><div class="eyebrow light">EARLY-CAREER TRACK</div><h2>Make your next move count.</h2><p>One place for internships, new-grad roles, research programs and apprenticeships.</p></div><div class="welcome-icon">↗</div></section>
-      <section class="stats" aria-label="Dashboard summary">
-        <article class="stat"><span class="stat-label">Saved opportunities</span><strong>—</strong><small>Connect tracker data to populate</small></article>
-        <article class="stat"><span class="stat-label">Application pipeline</span><strong>—</strong><small>Connect tracker data to populate</small></article>
-        <article class="stat"><span class="stat-label">Urgent deadlines</span><strong>—</strong><small>Requires live deadline data</small></article>
+      <header class="topbar">
+        <div>
+          <div class="eyebrow">YOUR CAREER COMMAND CENTER</div>
+          <h1>Opportunity radar</h1>
+          <p class="subtitle">Find the next credible step in your technical career.</p>
+        </div>
+        <div class="avatar">A</div>
+      </header>
+
+      <section class="welcome">
+        <div>
+          <div class="eyebrow light">EARLY-CAREER TRACK</div>
+          <h2>Make your next move count.</h2>
+          <p>Internships, new-grad roles, research programs and apprenticeships in one workspace.</p>
+        </div>
+        <div class="welcome-icon">↗</div>
       </section>
-      <section class="section-head" id="opportunities"><div><div class="eyebrow">DISCOVERY</div><h2>Opportunity workspace</h2><p>Explore the opportunity types your radar is designed to track.</p></div><span class="pill"><span class="status-dot"></span> UI preview</span></section>
-      <section class="filters"><label>Search<input id="search" type="search" placeholder="Role, company or keyword…" /></label><label>Opportunity type<select id="type-filter"><option value="all">All types</option><option>Internship</option><option>New grad</option><option>Apprenticeship</option><option>Research</option><option>Fellowship</option></select></label><label>Focus area<select id="focus-filter"><option value="all">All technical areas</option><option>Backend</option><option>AI / ML</option><option>Platform</option><option>Security</option></select></label></section>
-      <section class="notice"><span class="notice-icon">i</span><div><strong>Live data is not connected yet.</strong><p>This is the frontend foundation. It does not claim to show verified openings. The Python radar and its data need to be connected in a later integration step.</p></div></section>
-      <section class="empty-state"><div class="empty-symbol">⌕</div><h3 id="empty-title">Your opportunity feed is ready to connect</h3><p id="empty-description">Once the radar data source is integrated, matching opportunities will appear here with official links, eligibility checks and deadline details.</p><button id="reset-filters" type="button">Reset filters</button></section>
-      <section class="section-head workflow-head" id="workflow"><div><div class="eyebrow">FOLLOW THROUGH</div><h2>Application workflow</h2><p>Keep discovery and follow-up connected instead of losing opportunities in bookmarks.</p></div></section>
-      <section class="workflow"><div><span class="step-number">01</span><strong>Discover</strong><p>Find relevant early-career openings.</p></div><div><span class="step-number">02</span><strong>Verify</strong><p>Check eligibility, location and official deadline.</p></div><div><span class="step-number">03</span><strong>Track</strong><p>Record applications and follow-ups.</p></div></section>
-      <footer>OPPORTUNITY NETWORK OS <span>Built for focused, evidence-based applications.</span></footer>
+
+      <section class="stats" aria-label="Dashboard summary">
+        <article class="stat">
+          <span class="stat-label">Saved opportunities</span>
+          <strong id="saved-count">—</strong>
+          <small>Records in the loaded snapshot</small>
+        </article>
+        <article class="stat">
+          <span class="stat-label">Application pipeline</span>
+          <strong id="application-count">—</strong>
+          <small>Tracker integration pending</small>
+        </article>
+        <article class="stat">
+          <span class="stat-label">Urgent deadlines</span>
+          <strong id="urgent-count">—</strong>
+          <small>Deadline data not available yet</small>
+        </article>
+      </section>
+
+      <section class="section-head" id="opportunities">
+        <div>
+          <div class="eyebrow">DISCOVERY</div>
+          <h2>Opportunity workspace</h2>
+          <p>Search and filter the records saved by your Python radar.</p>
+        </div>
+        <span class="pill"><span class="status-dot"></span> Radar snapshot</span>
+      </section>
+
+      <section class="filters">
+        <label>
+          Search
+          <input id="search" type="search" placeholder="Role, company or keyword…" />
+        </label>
+
+        <label>
+          Opportunity type
+          <select id="type-filter">
+            <option value="all">All types</option>
+            <option value="Internship">Internship</option>
+            <option value="New grad">New grad</option>
+            <option value="Apprenticeship">Apprenticeship</option>
+            <option value="Research">Research</option>
+            <option value="Fellowship">Fellowship</option>
+            <option value="Other">Other</option>
+          </select>
+        </label>
+
+        <label>
+          Focus area
+          <select id="focus-filter">
+            <option value="all">All technical areas</option>
+            <option value="Backend">Backend</option>
+            <option value="AI / ML">AI / ML</option>
+            <option value="Platform">Platform</option>
+            <option value="Security">Security</option>
+            <option value="Other">Other</option>
+          </select>
+        </label>
+      </section>
+
+      <section class="notice" id="data-notice">
+        <span class="notice-icon">i</span>
+        <div>
+          <strong id="data-status">Loading opportunity data…</strong>
+          <p id="data-message">Reading the saved radar snapshot.</p>
+        </div>
+      </section>
+
+      <section class="results-summary" aria-live="polite">
+        <h2 id="empty-title">Loading opportunities</h2>
+        <p id="empty-description">Please wait.</p>
+      </section>
+
+      <section
+        id="opportunity-results"
+        class="opportunity-results"
+        aria-live="polite"
+      ></section>
+
+      <section class="section-head workflow-head" id="workflow">
+        <div>
+          <div class="eyebrow">FOLLOW THROUGH</div>
+          <h2>Application workflow</h2>
+          <p>Discovery is only the first step. Verify and track each application.</p>
+        </div>
+      </section>
+
+      <section class="workflow">
+        <div>
+          <span class="step-number">01</span>
+          <strong>Discover</strong>
+          <p>Find relevant early-career openings.</p>
+        </div>
+        <div>
+          <span class="step-number">02</span>
+          <strong>Verify</strong>
+          <p>Check eligibility, location and the official listing.</p>
+        </div>
+        <div>
+          <span class="step-number">03</span>
+          <strong>Track</strong>
+          <p>Record applications and follow-ups in your tracker.</p>
+        </div>
+      </section>
+
+      <footer>
+        OPPORTUNITY NETWORK OS
+        <span>Official listings should always be checked before applying.</span>
+      </footer>
     </main>
   </div>
 </body>
