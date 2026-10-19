@@ -1,1 +1,317 @@
-{}
+{
+  "gh:figma:6178851004": {
+    "id": "gh:figma:6178851004",
+    "company": "Figma",
+    "title": "Data Engineer Intern (2027)",
+    "location": "San Francisco, CA • New York, NY",
+    "url": "https://boards.greenhouse.io/figma/jobs/6178851004?gh_jid=6178851004",
+    "updated_at": "2026-09-23T15:30:27-04:00",
+    "source": "Greenhouse"
+  },
+  "gh:figma:6178857004": {
+    "id": "gh:figma:6178857004",
+    "company": "Figma",
+    "title": "Data Science Intern (2027)",
+    "location": "San Francisco, CA • New York, NY",
+    "url": "https://boards.greenhouse.io/figma/jobs/6178857004?gh_jid=6178857004",
+    "updated_at": "2026-09-15T13:00:01-04:00",
+    "source": "Greenhouse"
+  },
+  "gh:figma:6152695004": {
+    "id": "gh:figma:6152695004",
+    "company": "Figma",
+    "title": "Software Engineer Intern (London, United Kingdom) (Summer 2027) ",
+    "location": "London, England",
+    "url": "https://boards.greenhouse.io/figma/jobs/6152695004?gh_jid=6152695004",
+    "updated_at": "2026-09-14T13:36:24-04:00",
+    "source": "Greenhouse"
+  },
+  "gh:figma:6143238004": {
+    "id": "gh:figma:6143238004",
+    "company": "Figma",
+    "title": "Software Engineer Intern (Summer 2027)",
+    "location": "San Francisco, CA • New York, NY",
+    "url": "https://boards.greenhouse.io/figma/jobs/6143238004?gh_jid=6143238004",
+    "updated_at": "2026-09-17T19:16:13-04:00",
+    "source": "Greenhouse"
+  },
+  "gh:cloudflare:8245211": {
+    "id": "gh:cloudflare:8245211",
+    "company": "Cloudflare",
+    "title": "Software Engineer Intern (2027)",
+    "location": "In-Office",
+    "url": "https://boards.greenhouse.io/cloudflare/jobs/8245211?gh_jid=8245211",
+    "updated_at": "2026-10-19T05:39:19-04:00",
+    "source": "Greenhouse"
+  },
+  "gh:cloudflare:8245197": {
+    "id": "gh:cloudflare:8245197",
+    "company": "Cloudflare",
+    "title": "Software Engineer Intern (2027)",
+    "location": "In-Office",
+    "url": "https://boards.greenhouse.io/cloudflare/jobs/8245197?gh_jid=8245197",
+    "updated_at": "2026-10-19T05:39:19-04:00",
+    "source": "Greenhouse"
+  },
+  "gh:cloudflare:8199958": {
+    "id": "gh:cloudflare:8199958",
+    "company": "Cloudflare",
+    "title": "Software Engineer Intern (2027) - Austin, TX",
+    "location": "In-Office",
+    "url": "https://boards.greenhouse.io/cloudflare/jobs/8199958?gh_jid=8199958",
+    "updated_at": "2026-10-19T05:39:19-04:00",
+    "source": "Greenhouse"
+  },
+  "gh:datadog:8114161": {
+    "id": "gh:datadog:8114161",
+    "company": "Datadog",
+    "title": "Software Engineering Intern",
+    "location": "Madrid, Spain",
+    "url": "https://careers.datadoghq.com/detail/8114161/?gh_jid=8114161",
+    "updated_at": "2026-09-29T13:18:57-04:00",
+    "source": "Greenhouse"
+  },
+  "gh:datadog:8114186": {
+    "id": "gh:datadog:8114186",
+    "company": "Datadog",
+    "title": "Software Engineering Intern",
+    "location": "Paris, France",
+    "url": "https://careers.datadoghq.com/detail/8114186/?gh_jid=8114186",
+    "updated_at": "2026-09-29T13:18:57-04:00",
+    "source": "Greenhouse"
+  },
+  "gh:datadog:8052118": {
+    "id": "gh:datadog:8052118",
+    "company": "Datadog",
+    "title": "Software Engineering Intern (Summer)",
+    "location": "Boston, Massachusetts, USA; New York, New York, USA",
+    "url": "https://careers.datadoghq.com/detail/8052118/?gh_jid=8052118",
+    "updated_at": "2026-09-30T14:31:55-04:00",
+    "source": "Greenhouse"
+  },
+  "gh:mongodb:8258279": {
+    "id": "gh:mongodb:8258279",
+    "company": "MongoDB",
+    "title": "2027 - Software Engineer Intern, Dublin - 6 Month Internship",
+    "location": "Dublin",
+    "url": "https://www.mongodb.com/careers/job/?gh_jid=8258279",
+    "updated_at": "2026-10-16T17:59:16-04:00",
+    "source": "Greenhouse"
+  },
+  "gh:duolingo:8888721002": {
+    "id": "gh:duolingo:8888721002",
+    "company": "Duolingo",
+    "title": "Data Scientist, Intern",
+    "location": "New York, NY; Pittsburgh, PA",
+    "url": "https://careers.duolingo.com/jobs/8888721002?gh_jid=8888721002",
+    "updated_at": "2026-10-15T16:00:01-04:00",
+    "source": "Greenhouse"
+  },
+  "gh:stripe:8194287": {
+    "id": "gh:stripe:8194287",
+    "company": "Stripe",
+    "title": "Data Analyst, Intern",
+    "location": "Toronto",
+    "url": "https://stripe.com/jobs/search?gh_jid=8194287",
+    "updated_at": "2026-10-07T19:02:27-04:00",
+    "source": "Greenhouse"
+  },
+  "gh:stripe:8194291": {
+    "id": "gh:stripe:8194291",
+    "company": "Stripe",
+    "title": "Data Analyst, Intern",
+    "location": "New York, Seattle, South San Francisco HQ",
+    "url": "https://stripe.com/jobs/search?gh_jid=8194291",
+    "updated_at": "2026-10-07T19:02:27-04:00",
+    "source": "Greenhouse"
+  },
+  "gh:stripe:8186442": {
+    "id": "gh:stripe:8186442",
+    "company": "Stripe",
+    "title": "Financial Data Analyst Intern, Technical Operations",
+    "location": "Singapore",
+    "url": "https://stripe.com/jobs/search?gh_jid=8186442",
+    "updated_at": "2026-10-07T19:02:27-04:00",
+    "source": "Greenhouse"
+  },
+  "gh:stripe:8186367": {
+    "id": "gh:stripe:8186367",
+    "company": "Stripe",
+    "title": "Integration Reliability Engineer Intern, Technical Operations",
+    "location": "Singapore",
+    "url": "https://stripe.com/jobs/search?gh_jid=8186367",
+    "updated_at": "2026-10-07T19:02:27-04:00",
+    "source": "Greenhouse"
+  },
+  "gh:stripe:8257892": {
+    "id": "gh:stripe:8257892",
+    "company": "Stripe",
+    "title": "Security Engineer, New Grad",
+    "location": "Dublin",
+    "url": "https://stripe.com/jobs/search?gh_jid=8257892",
+    "updated_at": "2026-10-12T09:25:30-04:00",
+    "source": "Greenhouse"
+  },
+  "gh:stripe:8212508": {
+    "id": "gh:stripe:8212508",
+    "company": "Stripe",
+    "title": "Software Engineer, Early Career — Immediate Start",
+    "location": "San Francisco, Seattle, New York",
+    "url": "https://stripe.com/jobs/search?gh_jid=8212508",
+    "updated_at": "2026-10-07T19:02:27-04:00",
+    "source": "Greenhouse"
+  },
+  "gh:stripe:8212517": {
+    "id": "gh:stripe:8212517",
+    "company": "Stripe",
+    "title": "Software Engineer, Early Career — Immediate Start",
+    "location": "Toronto",
+    "url": "https://stripe.com/jobs/search?gh_jid=8212517",
+    "updated_at": "2026-10-07T19:02:27-04:00",
+    "source": "Greenhouse"
+  },
+  "gh:stripe:8031833": {
+    "id": "gh:stripe:8031833",
+    "company": "Stripe",
+    "title": "Software Engineer, Intern",
+    "location": "Bengaluru",
+    "url": "https://stripe.com/jobs/search?gh_jid=8031833",
+    "updated_at": "2026-10-07T19:02:27-04:00",
+    "source": "Greenhouse"
+  },
+  "gh:stripe:8130883": {
+    "id": "gh:stripe:8130883",
+    "company": "Stripe",
+    "title": "Software Engineer, Intern",
+    "location": "Singapore",
+    "url": "https://stripe.com/jobs/search?gh_jid=8130883",
+    "updated_at": "2026-10-07T19:02:27-04:00",
+    "source": "Greenhouse"
+  },
+  "gh:stripe:8130867": {
+    "id": "gh:stripe:8130867",
+    "company": "Stripe",
+    "title": "Software Engineer, Intern",
+    "location": "London",
+    "url": "https://stripe.com/jobs/search?gh_jid=8130867",
+    "updated_at": "2026-10-07T19:02:27-04:00",
+    "source": "Greenhouse"
+  },
+  "gh:stripe:8130807": {
+    "id": "gh:stripe:8130807",
+    "company": "Stripe",
+    "title": "Software Engineer, Intern ",
+    "location": "Bucharest",
+    "url": "https://stripe.com/jobs/search?gh_jid=8130807",
+    "updated_at": "2026-10-07T19:02:27-04:00",
+    "source": "Greenhouse"
+  },
+  "gh:stripe:8130805": {
+    "id": "gh:stripe:8130805",
+    "company": "Stripe",
+    "title": "Software Engineer, Intern (Summer or Winter)",
+    "location": "Toronto",
+    "url": "https://stripe.com/jobs/search?gh_jid=8130805",
+    "updated_at": "2026-10-07T19:02:27-04:00",
+    "source": "Greenhouse"
+  },
+  "gh:stripe:8128745": {
+    "id": "gh:stripe:8128745",
+    "company": "Stripe",
+    "title": "Software Engineer, Intern (Summer or Winter)",
+    "location": "San Francisco, Seattle, New York City",
+    "url": "https://stripe.com/jobs/search?gh_jid=8128745",
+    "updated_at": "2026-10-07T19:02:27-04:00",
+    "source": "Greenhouse"
+  },
+  "gh:stripe:8097801": {
+    "id": "gh:stripe:8097801",
+    "company": "Stripe",
+    "title": "Software Engineer, Intern (Summer or Winter)",
+    "location": "Dublin",
+    "url": "https://stripe.com/jobs/search?gh_jid=8097801",
+    "updated_at": "2026-10-07T19:02:27-04:00",
+    "source": "Greenhouse"
+  },
+  "gh:stripe:8157838": {
+    "id": "gh:stripe:8157838",
+    "company": "Stripe",
+    "title": "Software Engineer, New Grad",
+    "location": "Toronto",
+    "url": "https://stripe.com/jobs/search?gh_jid=8157838",
+    "updated_at": "2026-10-07T19:02:27-04:00",
+    "source": "Greenhouse"
+  },
+  "gh:stripe:8160776": {
+    "id": "gh:stripe:8160776",
+    "company": "Stripe",
+    "title": "Software Engineer, New Grad",
+    "location": "Singapore",
+    "url": "https://stripe.com/jobs/search?gh_jid=8160776",
+    "updated_at": "2026-10-07T19:02:27-04:00",
+    "source": "Greenhouse"
+  },
+  "gh:stripe:8128744": {
+    "id": "gh:stripe:8128744",
+    "company": "Stripe",
+    "title": "Software Engineer, New Grad",
+    "location": "San Francisco, Seattle, New York",
+    "url": "https://stripe.com/jobs/search?gh_jid=8128744",
+    "updated_at": "2026-10-07T19:02:27-04:00",
+    "source": "Greenhouse"
+  },
+  "gh:stripe:8130930": {
+    "id": "gh:stripe:8130930",
+    "company": "Stripe",
+    "title": "Software Engineer, New Grad",
+    "location": "London",
+    "url": "https://stripe.com/jobs/search?gh_jid=8130930",
+    "updated_at": "2026-10-07T19:02:27-04:00",
+    "source": "Greenhouse"
+  },
+  "gh:stripe:8130881": {
+    "id": "gh:stripe:8130881",
+    "company": "Stripe",
+    "title": "Software Engineer, New Grad",
+    "location": "Dublin",
+    "url": "https://stripe.com/jobs/search?gh_jid=8130881",
+    "updated_at": "2026-10-07T19:02:27-04:00",
+    "source": "Greenhouse"
+  },
+  "gh:stripe:8130922": {
+    "id": "gh:stripe:8130922",
+    "company": "Stripe",
+    "title": "Software Engineer, New Grad",
+    "location": "Bucharest",
+    "url": "https://stripe.com/jobs/search?gh_jid=8130922",
+    "updated_at": "2026-10-07T19:02:27-04:00",
+    "source": "Greenhouse"
+  },
+  "gh:stripe:8130927": {
+    "id": "gh:stripe:8130927",
+    "company": "Stripe",
+    "title": "Software Engineer, New Grad - Frontend",
+    "location": "Barcelona",
+    "url": "https://stripe.com/jobs/search?gh_jid=8130927",
+    "updated_at": "2026-10-07T19:02:27-04:00",
+    "source": "Greenhouse"
+  },
+  "gh:vercel:6181759004": {
+    "id": "gh:vercel:6181759004",
+    "company": "Vercel",
+    "title": "Software Engineering Intern - Summer '27",
+    "location": "Hybrid - San Francisco",
+    "url": "https://job-boards.greenhouse.io/vercel/jobs/6181759004",
+    "updated_at": "2026-10-08T13:53:32-04:00",
+    "source": "Greenhouse"
+  },
+  "gh:vercel:6181755004": {
+    "id": "gh:vercel:6181755004",
+    "company": "Vercel",
+    "title": "Software Engineering Intern - Winter '27",
+    "location": "Hybrid - San Francisco",
+    "url": "https://job-boards.greenhouse.io/vercel/jobs/6181755004",
+    "updated_at": "2026-10-08T13:53:54-04:00",
+    "source": "Greenhouse"
+  }
+}
