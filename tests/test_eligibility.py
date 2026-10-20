@@ -108,5 +108,69 @@ class TestEligibility(unittest.TestCase):
         )
 
 
+    def test_summer_or_winter_without_year_stays_unknown(self):
+        result = assess_eligibility(
+            make_job(
+                "Software Engineer, Intern (Summer or Winter)",
+                description="Internship opportunity for university students.",
+            )
+        )
+        self.assertEqual(result["graduation_year"], "unknown")
+
+    def test_2027_internship_title_is_recognized(self):
+        result = assess_eligibility(
+            make_job("Software Engineer Intern (2027)")
+        )
+        self.assertEqual(result["graduation_year"], "mentions_2027")
+
+    def test_conflicting_graduation_year_is_flagged(self):
+        result = assess_eligibility(
+            make_job(
+                "Software Engineer Intern",
+                description="Applicants must be 2026 graduates.",
+            )
+        )
+        self.assertEqual(result["graduation_year"], "possible_mismatch")
+
+
+    def test_unrelated_year_does_not_prove_graduation_eligibility(self):
+        result = assess_eligibility(
+            make_job(
+                "Software Engineer Intern",
+                description="Applications close in 2027.",
+            )
+        )
+        self.assertEqual(result["graduation_year"], "unknown")
+
+    def test_explicit_2027_graduation_window_is_recognized(self):
+        result = assess_eligibility(
+            make_job(
+                "Software Engineer Intern",
+                description="Expected graduation between December 2026 and May 2027.",
+            )
+        )
+        self.assertEqual(result["graduation_year"], "mentions_2027")
+
+
+    def test_graduation_by_summer_2026_is_flagged_as_mismatch(self):
+        result = assess_eligibility(
+            make_job(
+                "Security Engineer, New Grad",
+                description="Currently enrolled in a bachelor's program "
+                            "(graduating by summer 2026).",
+            )
+        )
+        self.assertEqual(result["graduation_year"], "possible_mismatch")
+
+    def test_application_deadline_in_2026_is_not_graduation_mismatch(self):
+        result = assess_eligibility(
+            make_job(
+                "Software Engineer Intern",
+                description="Applications close in 2026.",
+            )
+        )
+        self.assertEqual(result["graduation_year"], "unknown")
+
+
 if __name__ == "__main__":
     unittest.main()
