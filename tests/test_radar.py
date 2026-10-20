@@ -103,16 +103,16 @@ class TestRadar(unittest.TestCase):
 
     def test_keep_software_engineer_new_grad(self):
         self.assertTrue(is_relevant(job("Software Engineer, New Grad"), CONFIG))
-    def test_clean_keeps_expected_fields(self):
+    def test_clean_keeps_expected_fields_including_description(self):
         result = clean(job("Software Engineering Intern"))
         self.assertEqual(
             set(result),
-            {"id", "company", "title", "location", "url", "updated_at", "source"},
+            {"id", "company", "title", "location", "url", "description", "updated_at", "source"},
         )
 
-    def test_clean_omits_description(self):
+    def test_clean_preserves_description(self):
         result = clean(job("Software Engineering Intern", "Long description"))
-        self.assertNotIn("description", result)
+        self.assertEqual(result["description"], "Long description")
 
 
 if __name__ == "__main__":
