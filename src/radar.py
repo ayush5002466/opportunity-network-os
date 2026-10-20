@@ -256,6 +256,103 @@ def is_relevant(job, cfg):
     return has_early_signal and has_technical_signal
 
 
+
+def assess_eligibility(job):
+    """Assess available listing evidence for a 2027 Indian B.Tech student.
+
+    This is a conservative text-based screen, not official verification.
+    """
+    title = normalize(job.get("title", ""))
+    location = normalize(job.get("location", ""))
+    description = normalize(job.get("description", ""))
+    text = f"{title} {location} {description}"
+
+    result = {
+        "status": "needs_review",
+        "graduation_year": "unknown",
+        "location_fit": "unknown",
+        "work_authorization": "unknown",
+        "experience_fit": "unknown",
+        "reasons": [],
+    }
+
+    if not title or not job.get("url"):
+        result["reasons"].append("Missing title or official listing URL.")
+        return result
+
+    # Explicit graduation-year evidence.
+    if re.search(r"\b(2027|class of 2027|graduat(?:e|ing) in 2027)\b", text):
+        result["graduation_year"] = "mentions_2027"
+        result["reasons"].append(
+            "Listing mentions 2027; confirm the exact graduation requirement."
+        )
+    elif re.search(r"\b(2025|2026|2028|2029) graduates?\b", text):
+        result["graduation_year"] = "possible_mismatch"
+        result["reasons"].append(
+            "Listing mentions a different graduation year; inspect the exact criteria."
+        )
+    else:
+        result["reasons"].append("No clear 2027 graduation requirement found.")
+
+    # Work arrangement is not the same as geographic location.
+    india_terms = (
+        "india", "bengaluru", "bangalore", "hyderabad",
+        "mumbai", "delhi", "pune", "noida", "gurugram",
+    )
+    arrangement_only = {
+        "in-office", "in office", "onsite", "on-site",
+        "hybrid", "remote", "remote worldwide",
+    }
+
+    if any(term in location for term in india_terms):
+        result["location_fit"] = "india_or_remote_india"
+    elif location in arrangement_only:
+        result["location_fit"] = "location_unknown"
+    elif "remote" in location:
+        result["location_fit"] = "remote_scope_unknown"
+    elif location:
+        result["location_fit"] = "outside_india_or_unclear"
+    else:
+        result["location_fit"] = "location_unknown"
+
+    result["reasons"].append(
+        "Confirm the geographic location and whether applicants residing in India are accepted."
+    )
+    # Do not infer sponsorship or work rights from country or job title.
+    if re.search(r"\b(no visa sponsorship|unable to sponsor|must be authorized to work|must have the right to work|without sponsorship)\b", text):
+        result["work_authorization"] = "restriction_mentioned"
+        result["reasons"].append(
+            "A work-authorization restriction is mentioned; compare it with your circumstances."
+        )
+    elif re.search(r"\b(visa sponsorship available|will sponsor visas|sponsorship provided)\b", text):
+        result["work_authorization"] = "sponsorship_mentioned"
+        result["reasons"].append(
+            "Sponsorship is mentioned, but eligibility still needs confirmation."
+        )
+    else:
+        result["reasons"].append(
+            "Work authorization or visa sponsorship is not clearly established."
+        )
+
+    # Flag explicit experience requirements; do not assume internships require none.
+    if re.search(r"\b([3-9]|[1-9][0-9])\+? years? of experience\b", text):
+        result["experience_fit"] = "experience_requirement_mentioned"
+        result["reasons"].append(
+            "The listing mentions years of experience; review the exact requirement."
+        )
+    elif re.search(r"\b(no experience required|without prior experience|students welcome|currently enrolled|internship)\b", text):
+        result["experience_fit"] = "early_career_signal"
+        result["reasons"].append(
+            "An early-career signal appears in the listing; confirm all requirements."
+        )
+    else:
+        result["reasons"].append("Experience requirements need review.")
+
+    # A text-only screen never claims official eligibility verification.
+    result["status"] = "needs_review"
+    return result
+
+
 def clean(job):
     """Keep saved job records compact."""
     fields = (
@@ -425,7 +522,13 @@ def discover():
     ]
     relevant = deduplicate_jobs(relevant)
 
-    current = {job["id"]: clean(job) for job in relevant}
+    current = {
+        job["id"]: {
+            **clean(job),
+            "eligibility": assess_eligibility(job),
+        }
+        for job in relevant
+    }
 
     old_urls = {
         canonical_url(job.get("url", ""))
@@ -523,21 +626,22 @@ def list_jobs():
     )
 
     for job in jobs:
+        eligibility = job.get("eligibility") or {}
         print(
             f"{job.get('id', '')} | "
             f"{job.get('company', '')} | "
             f"{job.get('title', '')} | "
             f"{job.get('location', '')} | "
-            f"{job.get('url', '')}"
+            f"{job.get('url', '')} | "
+            f"eligibility: {eligibility.get('status', 'needs_review')} | "
+            f"graduation: {eligibility.get('graduation_year', 'unknown')} | "
+            f"location fit: {eligibility.get('location_fit', 'unknown')} | "
+            f"work authorization: {eligibility.get('work_authorization', 'unknown')} | "
+            f"experience: {eligibility.get('experience_fit', 'unknown')}"
         )
 
     if not jobs:
         print("No saved jobs. Run: python -m src.radar discover")
-
-
-# ==================================================
-# APPLICATION TRACKER
-# ==================================================
 
 def add_application(args):
     conn = db_conn()
