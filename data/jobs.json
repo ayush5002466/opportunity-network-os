@@ -35,21 +35,21 @@
     "updated_at": "2026-09-17T19:16:13-04:00",
     "source": "Greenhouse"
   },
-  "gh:cloudflare:8245211": {
-    "id": "gh:cloudflare:8245211",
-    "company": "Cloudflare",
-    "title": "Software Engineer Intern (2027)",
-    "location": "In-Office",
-    "url": "https://boards.greenhouse.io/cloudflare/jobs/8245211?gh_jid=8245211",
-    "updated_at": "2026-10-19T05:39:19-04:00",
-    "source": "Greenhouse"
-  },
   "gh:cloudflare:8245197": {
     "id": "gh:cloudflare:8245197",
     "company": "Cloudflare",
     "title": "Software Engineer Intern (2027)",
     "location": "In-Office",
     "url": "https://boards.greenhouse.io/cloudflare/jobs/8245197?gh_jid=8245197",
+    "updated_at": "2026-10-19T05:39:19-04:00",
+    "source": "Greenhouse"
+  },
+  "gh:cloudflare:8245211": {
+    "id": "gh:cloudflare:8245211",
+    "company": "Cloudflare",
+    "title": "Software Engineer Intern (2027)",
+    "location": "In-Office",
+    "url": "https://boards.greenhouse.io/cloudflare/jobs/8245211?gh_jid=8245211",
     "updated_at": "2026-10-19T05:39:19-04:00",
     "source": "Greenhouse"
   },
@@ -206,6 +206,15 @@
     "updated_at": "2026-10-07T19:02:27-04:00",
     "source": "Greenhouse"
   },
+  "gh:stripe:8097801": {
+    "id": "gh:stripe:8097801",
+    "company": "Stripe",
+    "title": "Software Engineer, Intern (Summer or Winter)",
+    "location": "Dublin",
+    "url": "https://stripe.com/jobs/search?gh_jid=8097801",
+    "updated_at": "2026-10-07T19:02:27-04:00",
+    "source": "Greenhouse"
+  },
   "gh:stripe:8130805": {
     "id": "gh:stripe:8130805",
     "company": "Stripe",
@@ -224,15 +233,6 @@
     "updated_at": "2026-10-07T19:02:27-04:00",
     "source": "Greenhouse"
   },
-  "gh:stripe:8097801": {
-    "id": "gh:stripe:8097801",
-    "company": "Stripe",
-    "title": "Software Engineer, Intern (Summer or Winter)",
-    "location": "Dublin",
-    "url": "https://stripe.com/jobs/search?gh_jid=8097801",
-    "updated_at": "2026-10-07T19:02:27-04:00",
-    "source": "Greenhouse"
-  },
   "gh:stripe:8130930": {
     "id": "gh:stripe:8130930",
     "company": "Stripe",
@@ -242,30 +242,12 @@
     "updated_at": "2026-10-07T19:02:27-04:00",
     "source": "Greenhouse"
   },
-  "gh:stripe:8130922": {
-    "id": "gh:stripe:8130922",
+  "gh:stripe:8160776": {
+    "id": "gh:stripe:8160776",
     "company": "Stripe",
     "title": "Software Engineer, New Grad",
-    "location": "Bucharest",
-    "url": "https://stripe.com/jobs/search?gh_jid=8130922",
-    "updated_at": "2026-10-07T19:02:27-04:00",
-    "source": "Greenhouse"
-  },
-  "gh:stripe:8157838": {
-    "id": "gh:stripe:8157838",
-    "company": "Stripe",
-    "title": "Software Engineer, New Grad",
-    "location": "Toronto",
-    "url": "https://stripe.com/jobs/search?gh_jid=8157838",
-    "updated_at": "2026-10-07T19:02:27-04:00",
-    "source": "Greenhouse"
-  },
-  "gh:stripe:8128744": {
-    "id": "gh:stripe:8128744",
-    "company": "Stripe",
-    "title": "Software Engineer, New Grad",
-    "location": "San Francisco, Seattle, New York",
-    "url": "https://stripe.com/jobs/search?gh_jid=8128744",
+    "location": "Singapore",
+    "url": "https://stripe.com/jobs/search?gh_jid=8160776",
     "updated_at": "2026-10-07T19:02:27-04:00",
     "source": "Greenhouse"
   },
@@ -278,12 +260,30 @@
     "updated_at": "2026-10-07T19:02:27-04:00",
     "source": "Greenhouse"
   },
-  "gh:stripe:8160776": {
-    "id": "gh:stripe:8160776",
+  "gh:stripe:8157838": {
+    "id": "gh:stripe:8157838",
     "company": "Stripe",
     "title": "Software Engineer, New Grad",
-    "location": "Singapore",
-    "url": "https://stripe.com/jobs/search?gh_jid=8160776",
+    "location": "Toronto",
+    "url": "https://stripe.com/jobs/search?gh_jid=8157838",
+    "updated_at": "2026-10-07T19:02:27-04:00",
+    "source": "Greenhouse"
+  },
+  "gh:stripe:8130922": {
+    "id": "gh:stripe:8130922",
+    "company": "Stripe",
+    "title": "Software Engineer, New Grad",
+    "location": "Bucharest",
+    "url": "https://stripe.com/jobs/search?gh_jid=8130922",
+    "updated_at": "2026-10-07T19:02:27-04:00",
+    "source": "Greenhouse"
+  },
+  "gh:stripe:8128744": {
+    "id": "gh:stripe:8128744",
+    "company": "Stripe",
+    "title": "Software Engineer, New Grad",
+    "location": "San Francisco, Seattle, New York",
+    "url": "https://stripe.com/jobs/search?gh_jid=8128744",
     "updated_at": "2026-10-07T19:02:27-04:00",
     "source": "Greenhouse"
   },
