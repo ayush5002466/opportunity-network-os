@@ -801,7 +801,8 @@ def assess_eligibility(job):
     if result["graduation_year"] == "possible_mismatch":
         result["status"] = "likely_ineligible"
         result["reasons"].append(
-            "The stated graduation year may not match your 2027 batch."
+            "The stated graduation year may conflict with your 2028 batch; "
+            "verify the official eligibility criteria."
         )
     else:
         result["status"] = "needs_review"
