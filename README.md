@@ -1,6 +1,6 @@
 # Opportunity & Network OS
 
-A starter project for a 2027 B.Tech CSE/AI student in India with zero professional experience.
+A starter project for a 2028 B.Tech CSE/AI student in India with zero professional experience.
 
 It discovers public jobs from configured Greenhouse and Lever boards, filters for early-career technical opportunities, deduplicates listings, sends email/Telegram alerts, and maintains a local application tracker. It also includes a lightweight outreach tracker so networking is based on genuine shared interests rather than mass messaging.
 
