@@ -5,3 +5,15 @@ __pycache__/
 data/tracker.db
 data/tracker.db-shm
 data/tracker.db-wal
+
+# Local SQLite databases and temporary database files
+*.db
+*.db-shm
+*.db-wal
+*.sqlite
+*.sqlite3
+
+# Private application and outreach data
+data/private/
+data/applications/
+data/outreach/
