@@ -28,11 +28,11 @@ class TestEligibility(unittest.TestCase):
         self.assertIn("work_authorization", result)
         self.assertIn("experience_fit", result)
 
-    def test_2027_mention_is_recorded_not_assumed_verified(self):
+    def test_2028_mention_is_recorded_not_assumed_verified(self):
         result = assess_eligibility(
-            make_job("Software Engineer Intern (2027)")
+            make_job("Software Engineer Intern (2028)")
         )
-        self.assertEqual(result["graduation_year"], "mentions_2027")
+        self.assertEqual(result["graduation_year"], "mentions_2028")
         self.assertEqual(result["status"], "needs_review")
 
     def test_india_location_is_recognized(self):
@@ -117,11 +117,11 @@ class TestEligibility(unittest.TestCase):
         )
         self.assertEqual(result["graduation_year"], "unknown")
 
-    def test_2027_internship_title_is_recognized(self):
+    def test_2028_internship_title_is_recognized(self):
         result = assess_eligibility(
-            make_job("Software Engineer Intern (2027)")
+            make_job("Software Engineer Intern (2028)")
         )
-        self.assertEqual(result["graduation_year"], "mentions_2027")
+        self.assertEqual(result["graduation_year"], "mentions_2028")
 
     def test_conflicting_graduation_year_is_flagged(self):
         result = assess_eligibility(
@@ -142,14 +142,14 @@ class TestEligibility(unittest.TestCase):
         )
         self.assertEqual(result["graduation_year"], "unknown")
 
-    def test_explicit_2027_graduation_window_is_recognized(self):
+    def test_explicit_2028_graduation_window_is_recognized(self):
         result = assess_eligibility(
             make_job(
                 "Software Engineer Intern",
-                description="Expected graduation between December 2026 and May 2027.",
+                description="Expected graduation between December 2027 and May 2028.",
             )
         )
-        self.assertEqual(result["graduation_year"], "mentions_2027")
+        self.assertEqual(result["graduation_year"], "mentions_2028")
 
 
     def test_graduation_by_summer_2026_is_flagged_as_mismatch(self):

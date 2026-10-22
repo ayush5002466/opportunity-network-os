@@ -597,7 +597,7 @@ def calculate_priority(job, eligibility):
     elif location_fit == "outside_india_or_unclear":
         score += 1
 
-    if graduation == "mentions_2027":
+    if graduation == "mentions_2028":
         score += 3
     elif graduation == "possible_mismatch":
         score -= 4
@@ -636,7 +636,7 @@ def priority_label(job):
     if work == "restriction_mentioned":
         return "CHECK WORK AUTHORIZATION"
 
-    if graduation == "mentions_2027" and location == "india_or_remote_india":
+    if graduation == "mentions_2028" and location == "india_or_remote_india":
         return "HIGH PRIORITY - VERIFY OFFICIAL CRITERIA"
 
     if location == "india_or_remote_india" and experience == "early_career_signal":
@@ -652,7 +652,7 @@ def priority_label(job):
 
 
 def assess_eligibility(job):
-    """Conservatively screen a listing for a 2027 Indian B.Tech student."""
+    """Conservatively screen a listing for a 2028 Indian B.Tech student."""
     title = normalize(job.get("title", ""))
     location = normalize(job.get("location", ""))
     description = normalize(job.get("description", ""))
@@ -674,43 +674,42 @@ def assess_eligibility(job):
 
     # Match explicit year signals in titles, and graduation-specific
     # wording in descriptions to avoid unrelated dates.
-    title_year_2027 = re.search(
-        r"\b2027\b|\b(?:summer|winter|fall|spring)\s+['']?27\b",
+    title_year_2028 = re.search(
+        r"\b2028\b|\b(?:summer|winter|fall|spring)\s+['']?28\b",
         title,
         re.IGNORECASE,
     )
 
-    graduation_2027 = re.search(
-        r"\bclass of\s*['']?27\b|"
-        r"\b(?:graduat(?:e|es|ed|ing|ion)|class)\b.{0,60}\b2027\b|"
-        r"\b2027\b.{0,60}\b(?:graduat(?:e|es|ed|ing|ion)|class)\b",
+    graduation_2028 = re.search(
+        r"\bclass of\s*['']?2028\b|"
+        r"\b(?:graduat(?:e|es|ed|ing|ion)|class)\b.{0,60}\b2028\b|"
+        r"\b2028\b.{0,60}\b(?:graduat(?:e|es|ed|ing|ion)|class)\b",
         description,
         re.IGNORECASE,
     )
 
     conflicting_graduation = re.search(
-        r"\bclass of\s*['']?(2025|2026|2028|2029)\b|"
-        r"\b(?:graduat(?:e|es|ed|ing|ion)|class)\b.{0,60}"
-        r"\b(2025|2026|2028|2029)\b|"
-        r"\b(2025|2026|2028|2029)\b.{0,60}"
-        r"\b(?:graduat(?:e|es|ed|ing|ion)|class)\b",
+        r"\bclass of\s*['']?(2025|2026|2027|2029)\b|"
+        r"\b(?:graduat(?:e|es|ed|ing|ion)|class)\b.{0,60}\b(2025|2026|2027|2029)\b|"
+        r"\b(2025|2026|2027|2029)\b.{0,60}\b(?:graduat(?:e|es|ed|ing|ion)|class)\b",
         description,
         re.IGNORECASE,
     )
 
-    if title_year_2027 or graduation_2027:
-        result["graduation_year"] = "mentions_2027"
+    if title_year_2028 or graduation_2028:
+        result["graduation_year"] = "mentions_2028"
         result["reasons"].append(
-            "A 2027 year signal appears in the title or graduation criteria; "
+            "A 2028 graduation signal appears in the title or criteria; "
             "confirm the official eligibility requirements."
         )
     elif conflicting_graduation:
         result["graduation_year"] = "possible_mismatch"
         result["reasons"].append(
-            "The description mentions a different graduation year; "
-            "check whether the 2027 batch is excluded."
+            "The listing may target a different graduation year; "
+            "check the official eligibility requirements."
         )
-    else:
+
+    if result["graduation_year"] == "unknown":
         result["reasons"].append(
             "No clear graduation-year requirement found."
         )
