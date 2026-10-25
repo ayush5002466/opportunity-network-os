@@ -1,6 +1,12 @@
 ﻿import unittest
 
-from src.radar import calculate_priority, is_relevant, clean
+from src.radar import (
+    assess_eligibility,
+    calculate_priority,
+    clean,
+    is_relevant,
+    priority_label,
+)
 
 
 CONFIG = {
@@ -51,6 +57,36 @@ class TestRadar(unittest.TestCase):
             with self.subTest(title=title):
                 self.assertFalse(is_relevant(job(title), CONFIG))
                 self.assertEqual(self.priority_for(title), 0)
+
+    def test_new_grad_role_with_2027_requirement_is_flagged_and_scores_zero(self):
+        job_data = job("Software Engineer, New Grad")
+        job_data["description"] = "Applicants must graduate by 2027."
+        eligibility = assess_eligibility(job_data)
+        job_data["eligibility"] = eligibility
+
+        self.assertTrue(is_relevant(job_data, CONFIG))
+        self.assertEqual(eligibility["graduation_year"], "possible_mismatch")
+        self.assertEqual(eligibility["status"], "likely_ineligible")
+        self.assertEqual(calculate_priority(job_data, eligibility, CONFIG), 0)
+        self.assertEqual(
+            priority_label(job_data),
+            "LIKELY MISMATCH - CHECK REQUIREMENTS",
+        )
+
+    def test_internship_accepting_2028_graduates_remains_eligible_for_review(self):
+        job_data = job("Software Engineering Intern")
+        job_data["description"] = (
+            "Expected graduation between December 2027 and May 2028."
+        )
+        eligibility = assess_eligibility(job_data)
+
+        self.assertTrue(is_relevant(job_data, CONFIG))
+        self.assertEqual(eligibility["graduation_year"], "mentions_2028")
+        self.assertEqual(eligibility["status"], "needs_review")
+        self.assertGreater(
+            calculate_priority(job_data, eligibility, CONFIG),
+            0,
+        )
 
     def test_ai_research_fellow(self):
         self.assertTrue(is_relevant(job("AI Research Fellow"), CONFIG))

@@ -189,6 +189,39 @@ class TestEligibility(unittest.TestCase):
         self.assertEqual(result["graduation_year"], "possible_mismatch")
         self.assertEqual(result["status"], "likely_ineligible")
 
+    def test_multiple_accepted_graduation_terms_include_2028(self):
+        result = assess_eligibility(
+            make_job(
+                "2027 - Summer Software Engineer Intern",
+                description=(
+                    "Graduation date in spring 2028, summer 2028, fall 2028, "
+                    "spring 2029, or summer 2029."
+                ),
+            )
+        )
+        self.assertEqual(result["graduation_year"], "mentions_2028")
+        self.assertEqual(result["status"], "needs_review")
+
+    def test_title_year_does_not_override_accepted_2028_graduation_terms(self):
+        result = assess_eligibility(
+            make_job(
+                "Summer Software Engineer Intern (2027)",
+                description="Applicants graduating in 2028 are eligible.",
+            )
+        )
+        self.assertEqual(result["graduation_year"], "mentions_2028")
+        self.assertEqual(result["status"], "needs_review")
+
+    def test_explicit_graduation_by_2027_remains_a_mismatch(self):
+        result = assess_eligibility(
+            make_job(
+                "2027 - Software Engineer, New Grad",
+                description="Applicants must graduate by 2027.",
+            )
+        )
+        self.assertEqual(result["graduation_year"], "possible_mismatch")
+        self.assertEqual(result["status"], "likely_ineligible")
+
     def test_2030_deadline_or_internship_start_is_not_graduation_requirement(self):
         for description in (
             "Applications close in 2030.",

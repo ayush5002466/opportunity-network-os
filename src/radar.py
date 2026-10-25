@@ -587,6 +587,9 @@ def calculate_priority(job, eligibility, cfg=None):
     if not is_relevant(job, cfg):
         return 0
 
+    if eligibility.get("graduation_year") == "possible_mismatch":
+        return 0
+
     score = 0
     location_fit = eligibility.get("location_fit", "unknown")
     graduation = eligibility.get("graduation_year", "unknown")
@@ -601,9 +604,6 @@ def calculate_priority(job, eligibility, cfg=None):
 
     if graduation == "mentions_2028":
         score += 2
-    elif graduation == "possible_mismatch":
-        score -= 4
-
     if experience == "early_career_signal":
         score += 1
     elif experience == "experience_requirement_mentioned":
@@ -699,10 +699,14 @@ def assess_eligibility(job):
         re.IGNORECASE,
     )
 
-    graduation_years = {
-        next(year for year in match.groups() if year)
-        for match in graduation_year_matches
-    }
+    graduation_years = set()
+    for match in graduation_year_matches:
+        graduation_years.update(
+            re.findall(
+                rf"\b{graduation_year_pattern}\b",
+                match.group(0),
+            )
+        )
 
     if "2028" in graduation_years:
         result["graduation_year"] = "mentions_2028"
