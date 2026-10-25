@@ -58,6 +58,48 @@ class TestRadar(unittest.TestCase):
                 self.assertFalse(is_relevant(job(title), CONFIG))
                 self.assertEqual(self.priority_for(title), 0)
 
+    def test_target_early_career_technical_titles_are_relevant(self):
+        for title in (
+            "Java Intern",
+            "Java Developer Intern",
+            "Backend Developer Intern",
+            "Software Engineering Intern",
+            "Software Development Intern",
+            "Web Development Intern",
+            "Full Stack Developer Intern",
+            "AI/ML Intern",
+            "AI/ML Research Intern",
+            "Data Engineering Intern",
+            "DevOps Intern",
+            "Platform Engineering Intern",
+            "Security Engineering Intern",
+        ):
+            with self.subTest(title=title):
+                self.assertTrue(is_relevant(job(title), CONFIG))
+
+    def test_senior_and_non_target_titles_are_excluded(self):
+        for title in (
+            "Senior Software Engineer",
+            "Staff Backend Engineer",
+            "Engineering Manager",
+            "Recruiter",
+            "Sales Representative",
+        ):
+            with self.subTest(title=title):
+                self.assertFalse(is_relevant(job(title), CONFIG))
+
+    def test_technical_title_still_requires_an_early_career_signal(self):
+        for title in (
+            "Java Developer",
+            "Web Development Engineer",
+            "Backend Software Engineer",
+        ):
+            with self.subTest(title=title):
+                self.assertFalse(is_relevant(job(title), CONFIG))
+
+    def test_keyword_matching_does_not_accept_partial_words(self):
+        self.assertFalse(is_relevant(job("JavaScript Intern"), CONFIG))
+
     def test_new_grad_role_with_2027_requirement_is_flagged_and_scores_zero(self):
         job_data = job("Software Engineer, New Grad")
         job_data["description"] = "Applicants must graduate by 2027."

@@ -310,6 +310,9 @@ def load_state():
 
 # ==================================================
 
+class InvalidSourcePayload(ValueError):
+    """Raised when a source response does not match its public API shape."""
+
 
 
 def fetch_greenhouse(company, token):
@@ -328,32 +331,32 @@ def fetch_greenhouse(company, token):
 
     response.raise_for_status()
 
-
+    payload = response.json()
+    if not isinstance(payload, dict) or not isinstance(payload.get("jobs"), list):
+        raise InvalidSourcePayload("expected an object containing a jobs list")
 
     result = []
 
 
 
-    for item in response.json().get("jobs", []):
-
+    for item in payload["jobs"]:
+        if not isinstance(item, dict):
+            raise InvalidSourcePayload("each job must be an object")
+        location = item.get("location")
+        if location is None:
+            location = {}
+        if not isinstance(location, dict):
+            raise InvalidSourcePayload("job location must be an object")
         result.append({
-
-            "id": f"gh:{token}:{item.get('id')}",
-
-            "company": company,
-
-            "title": item.get("title", ""),
-
-            "location": (
-
-                (item.get("location") or {}).get("name", "")
-
+            "id": (
+                f"gh:{token}:{item['id']}"
+                if item.get("id") not in (None, "") else ""
             ),
-
+            "company": company,
+            "title": item.get("title", ""),
+            "location": location.get("name", ""),
             "url": item.get("absolute_url", ""),
-
             "updated_at": item.get("updated_at", ""),
-
             "description": strip_html(item.get("content", "")),
 
             "source": "Greenhouse",
@@ -378,15 +381,22 @@ def fetch_lever(company, site):
 
     response.raise_for_status()
 
-
+    payload = response.json()
+    if not isinstance(payload, list):
+        raise InvalidSourcePayload("expected a list of postings")
 
     result = []
 
 
 
-    for item in response.json():
-
-        categories = item.get("categories") or {}
+    for item in payload:
+        if not isinstance(item, dict):
+            raise InvalidSourcePayload("each posting must be an object")
+        categories = item.get("categories")
+        if categories is None:
+            categories = {}
+        if not isinstance(categories, dict):
+            raise InvalidSourcePayload("posting categories must be an object")
 
 
 
@@ -398,11 +408,11 @@ def fetch_lever(company, site):
 
         ])
 
-
-
         result.append({
-
-            "id": f"lever:{site}:{item.get('id')}",
+            "id": (
+                f"lever:{site}:{item['id']}"
+                if item.get("id") not in (None, "") else ""
+            ),
 
             "company": company,
 
@@ -467,11 +477,8 @@ def is_relevant(job, cfg):
 
 
     excluded_titles = [
-
         "senior", "staff", "principal", "director", "manager",
-
         "lead", "head", "vice president", "recruiter",
-
         "account executive", "sales development",
 
         "business development", "product marketing",
@@ -491,36 +498,17 @@ def is_relevant(job, cfg):
         term for term in cfg.get("exclude_keywords", [])
 
         if normalize(term)
-
     ]
-
-
-
-    if any(
-
-        has_phrase(term)
-
-        for term in excluded_titles + configured_excludes
-
-    ):
-
-        return False
-
-
-
-    title_text = normalize(job.get("title", ""))
 
     excluded_title_terms = [
-        "principal", "senior", "staff engineer", "director",
-        "vice president", "chief ", "distinguished", "head of",
-        "lead software engineer", "lead developer", "lead engineer",
-        "sales", "marketing", "recruiter", "recruiting",
+        "chief", "distinguished", "sales", "marketing", "recruiting",
         "human resources", "people systems", "partner manager",
-        "account executive", "customer success", "business development",
-        "product management",
+        "customer success", "business development", "product management",
     ]
 
-    if any(term in title_text for term in excluded_title_terms):
+    if any(has_phrase(term) for term in (
+        excluded_titles + configured_excludes + excluded_title_terms
+    )):
         return False
 
     early_signals = [
@@ -541,11 +529,12 @@ def is_relevant(job, cfg):
 
     technical_signals = [
 
-        "software", "developer", "engineer", "engineering",
+        "software", "developer", "engineer", "engineering", "java",
 
         "backend", "back-end", "frontend", "front-end",
 
-        "full stack", "full-stack", "data", "machine learning",
+        "full stack", "full-stack", "web development", "web developer",
+        "data", "machine learning",
 
         "artificial intelligence", "security", "devops",
 
@@ -930,6 +919,20 @@ def send_email(subject, body):
     return True
 
 
+def describe_notification_error(exc):
+    """Describe a notification failure without echoing exception contents."""
+    if isinstance(exc, requests.exceptions.HTTPError):
+        status = getattr(exc.response, "status_code", None)
+        return f"HTTP error (status {status})" if status else "HTTP error"
+    if isinstance(exc, requests.exceptions.Timeout):
+        return "timeout"
+    if isinstance(exc, requests.exceptions.RequestException):
+        return f"request error ({type(exc).__name__})"
+    if isinstance(exc, smtplib.SMTPException):
+        return f"SMTP error ({type(exc).__name__})"
+    return f"error ({type(exc).__name__})"
+
+
 def notify(subject, body):
     sent = []
 
@@ -937,13 +940,19 @@ def notify(subject, body):
         if send_email(subject, body):
             sent.append("email")
     except Exception as exc:
-        print(f"Email delivery failed: {exc}", file=sys.stderr)
+        print(
+            f"Email delivery failed: {describe_notification_error(exc)}",
+            file=sys.stderr,
+        )
 
     try:
         if send_telegram(f"{subject}\n\n{body}"):
             sent.append("telegram")
     except Exception as exc:
-        print(f"Telegram delivery failed: {exc}", file=sys.stderr)
+        print(
+            f"Telegram delivery failed: {describe_notification_error(exc)}",
+            file=sys.stderr,
+        )
 
     result = ", ".join(sent) if sent else "none (configure credentials)"
     print(f"Notifications sent: {result}")
@@ -963,10 +972,13 @@ def canonical_url(value):
     from urllib.parse import parse_qsl, urlencode, urlsplit, urlunsplit
 
 
+    try:
+        parts = urlsplit(str(value or "").strip())
+        hostname = parts.hostname
+    except ValueError:
+        return ""
 
-    parts = urlsplit(str(value or "").strip())
-
-    if not parts.scheme or not parts.hostname:
+    if not parts.scheme or not hostname:
 
         return ""
 
@@ -1009,12 +1021,17 @@ def canonical_url(value):
 
 
 def deduplicate_jobs(jobs):
+    unique, _ = deduplicate_jobs_with_count(jobs)
+    return unique
+
+
+
+def deduplicate_jobs_with_count(jobs):
 
     unique = []
-
     seen_ids = set()
-
     seen_urls = set()
+    duplicates = 0
 
 
 
@@ -1027,11 +1044,9 @@ def deduplicate_jobs(jobs):
 
 
         if not job_id or not url_key:
-
             continue
-
         if job_id in seen_ids or url_key in seen_urls:
-
+            duplicates += 1
             continue
 
 
@@ -1044,9 +1059,124 @@ def deduplicate_jobs(jobs):
 
 
 
-    return unique
+    return unique, duplicates
 
 
+
+def describe_source_error(exc):
+    """Return a safe, useful error description without echoing request URLs."""
+    if isinstance(exc, requests.exceptions.HTTPError):
+        response = exc.response
+        status = getattr(response, "status_code", None)
+        return f"HTTP error (status {status})" if status else "HTTP error"
+    if isinstance(exc, requests.exceptions.Timeout):
+        return "timeout"
+    if isinstance(exc, json.JSONDecodeError):
+        return "JSON parsing error"
+    if isinstance(exc, InvalidSourcePayload):
+        return f"invalid payload ({exc})"
+    if isinstance(exc, requests.exceptions.RequestException):
+        return f"request error ({type(exc).__name__})"
+    return f"source error ({type(exc).__name__})"
+
+
+
+def merge_job_records(preferred, fallback):
+    """Merge records, preferring non-empty values from the first record."""
+    merged = dict(fallback)
+    for key, value in preferred.items():
+        if value not in (None, "", [], {}):
+            merged[key] = value
+    return merged
+
+
+def matching_saved_job_keys(saved_jobs, job):
+    job_id = str(job.get("id", "") or "").strip()
+    job_url = canonical_url(job.get("url", ""))
+    matches = []
+
+    for saved_key, saved_job in saved_jobs.items():
+        saved_ids = {str(saved_key).strip()}
+        if isinstance(saved_job, dict):
+            record_id = str(saved_job.get("id") or "").strip()
+            if record_id:
+                saved_ids.add(record_id)
+            saved_url = canonical_url(saved_job.get("url", ""))
+        else:
+            saved_url = ""
+        if (
+            (job_id and job_id in saved_ids)
+            or (job_url and saved_url and job_url == saved_url)
+        ):
+            matches.append(saved_key)
+
+    return matches
+
+
+def find_application_for_job(conn, job):
+    """Find a tracker row by ID first, then by canonical URL."""
+    job_id = str(job.get("id", "") or "").strip()
+    job_url = canonical_url(job.get("url", ""))
+    rows = conn.execute(
+        "SELECT job_id, url FROM applications ORDER BY rowid"
+    ).fetchall()
+
+    for row in rows:
+        if job_id and row["job_id"] == job_id:
+            return row
+
+    if job_url:
+        for row in rows:
+            if canonical_url(row["url"]) == job_url:
+                return row
+
+    return None
+
+
+
+def merge_saved_jobs(saved_jobs, fresh_jobs, preferred_ids_by_url=None):
+    """Merge fresh jobs by ID or canonical URL while retaining saved data."""
+    merged = dict(saved_jobs)
+    preferred_ids_by_url = preferred_ids_by_url or {}
+
+    for fresh_key, fresh_job in fresh_jobs.items():
+        fresh_id = str(fresh_job.get("id") or fresh_key or "").strip()
+        fresh_for_matching = {**fresh_job, "id": fresh_id}
+        matches = matching_saved_job_keys(merged, fresh_for_matching)
+
+        if not matches:
+            target_key = fresh_id or str(fresh_key or "").strip()
+            if not target_key:
+                target_key = "__unidentified__"
+                suffix = 1
+                while target_key in merged:
+                    target_key = f"__unidentified__{suffix}"
+                    suffix += 1
+            merged[target_key] = fresh_job
+            continue
+
+        canonical_url_key = canonical_url(fresh_job.get("url", ""))
+        preferred_id = str(
+            preferred_ids_by_url.get(canonical_url_key, "") or ""
+        ).strip()
+        target_key = preferred_id or matches[0]
+
+        existing = {}
+        for saved_key in matches:
+            saved_record = merged[saved_key]
+            if isinstance(saved_record, dict):
+                existing = merge_job_records(existing, saved_record)
+            if saved_key != target_key:
+                merged.pop(saved_key)
+
+        combined = merge_job_records(fresh_job, existing)
+        if preferred_id:
+            combined["id"] = preferred_id
+        elif existing.get("id"):
+            combined["id"] = existing["id"]
+        merged[target_key] = combined
+
+    return merged
 
 
 
@@ -1056,63 +1186,68 @@ def discover():
 
     old = load_state()
 
-
-
     found = []
+    source_results = []
 
-    errors = []
-
-
+    def fetch_source(source, item, fetcher, board_key):
+        company = item.get("company", "?")
+        try:
+            jobs = fetcher(company, item[board_key])
+        except Exception as exc:
+            source_results.append({
+                "label": f"{source} {company}",
+                "error": describe_source_error(exc),
+            })
+            return
+        source_results.append({
+            "label": f"{source} {company}",
+            "count": len(jobs),
+        })
+        found.extend(jobs)
 
     for item in cfg.get("greenhouse", []):
-
-        try:
-
-            found.extend(
-
-                fetch_greenhouse(item["company"], item["token"])
-
-            )
-
-        except Exception as exc:
-
-            errors.append(
-
-                f"Greenhouse {item.get('company', '?')}: {exc}"
-
-            )
-
-
+        fetch_source("Greenhouse", item, fetch_greenhouse, "token")
 
     for item in cfg.get("lever", []):
+        fetch_source("Lever", item, fetch_lever, "site")
 
-        try:
+    missing_id = 0
+    missing_url = 0
+    invalid_url = 0
+    role_rejected = 0
+    candidates = []
 
-            found.extend(
+    for job in found:
+        if not str(job.get("id", "")).strip():
+            missing_id += 1
+            continue
+        if not str(job.get("url", "")).strip():
+            missing_url += 1
+            continue
+        if not canonical_url(job["url"]):
+            invalid_url += 1
+            continue
+        if not is_relevant(job, cfg):
+            role_rejected += 1
+            continue
+        candidates.append(job)
 
-                fetch_lever(item["company"], item["site"])
+    relevant, duplicate_count = deduplicate_jobs_with_count(candidates)
 
-            )
-
-        except Exception as exc:
-
-            errors.append(
-
-                f"Lever {item.get('company', '?')}: {exc}"
-
-            )
-
-
-
-    relevant = [
-
-        job for job in found
-
-        if job.get("url") and job.get("id") and is_relevant(job, cfg)
-
-    ]
-
-    relevant = deduplicate_jobs(relevant)
+    conn = db_conn()
+    resolved_jobs = []
+    application_matches = {}
+    preferred_ids_by_url = {}
+    for job in relevant:
+        application = find_application_for_job(conn, job)
+        resolved_job = dict(job)
+        if application is not None:
+            resolved_job["id"] = application["job_id"]
+            application_matches[job["id"]] = application["job_id"]
+            canonical = canonical_url(job.get("url", ""))
+            if canonical:
+                preferred_ids_by_url[canonical] = application["job_id"]
+        resolved_jobs.append(resolved_job)
 
 
 
@@ -1129,44 +1264,31 @@ def discover():
 
         }
 
+        for job in resolved_jobs
+
+    }
+    saved_matches = {
+        job["id"]: bool(matching_saved_job_keys(old, job))
         for job in relevant
-
     }
-
-
-
-    old_urls = {
-
-        canonical_url(job.get("url", ""))
-
-        for job in old.values()
-
-        if isinstance(job, dict) and job.get("url")
-
-    }
-
-
-
-    new_jobs = [
-
+    existing_jobs = [
         job for job in relevant
-
-        if job["id"] not in old
-
-        and canonical_url(job["url"]) not in old_urls
-
+        if saved_matches[job["id"]] or job["id"] in application_matches
+    ]
+    new_jobs = [
+        job for job in relevant
+        if not saved_matches[job["id"]]
+        and job["id"] not in application_matches
     ]
 
 
 
-    # Merge fresh listings with saved jobs so missing listings are retained.
-    merged = dict(old)
-    for job_id, fresh_job in current.items():
-        previous = merged.get(job_id)
-        if isinstance(previous, dict):
-            merged[job_id] = {**previous, **fresh_job}
-        else:
-            merged[job_id] = fresh_job
+    # Merge by either stable listing ID or canonical application URL.
+    merged = merge_saved_jobs(
+        old,
+        current,
+        preferred_ids_by_url=preferred_ids_by_url,
+    )
 
     STATE.write_text(
         json.dumps(merged, indent=2, ensure_ascii=False),
@@ -1175,11 +1297,17 @@ def discover():
 
 
 
-    conn = db_conn()
-
-
-
     for job in relevant:
+        application_id = application_matches.get(job["id"], job["id"])
+        matched_keys = matching_saved_job_keys(old, job)
+        if matched_keys:
+            saved_job = old[matched_keys[0]]
+            json_id = (
+                saved_job.get("id") or matched_keys[0]
+                if isinstance(saved_job, dict) else matched_keys[0]
+            )
+            if application_id == job["id"]:
+                application_id = json_id
 
         conn.execute(
 
@@ -1194,8 +1322,7 @@ def discover():
             """,
 
             (
-
-                job["id"],
+                application_id,
 
                 job["title"],
 
@@ -1273,29 +1400,49 @@ def discover():
 
 
 
+    print("Discovery source results:")
+    for result in source_results:
+        if "error" in result:
+            print(f"- {result['label']}: ERROR - {result['error']}")
+        else:
+            print(
+                f"- {result['label']}: returned {result['count']} listings"
+            )
+
+    errors = [result for result in source_results if "error" in result]
     if errors:
-
+        error_counts = {}
+        for result in errors:
+            category = result["error"].split(" (", 1)[0]
+            error_counts[category] = error_counts.get(category, 0) + 1
         print(
-
-            "\nSource errors:\n" + "\n".join(errors),
-
+            "Source error totals: "
+            + ", ".join(
+                f"{category}={count}"
+                for category, count in sorted(error_counts.items())
+            ),
             file=sys.stderr,
-
         )
 
-
-
     print(
-
+        "Discovery stages (each rejection is counted at its first "
+        "applicable stage):"
+    )
+    print(f"- Listings returned by successful sources: {len(found)}")
+    print(f"- Rejected: missing ID: {missing_id}")
+    print(f"- Rejected: missing URL: {missing_url}")
+    print(f"- Rejected: invalid URL: {invalid_url}")
+    print(f"- Rejected: role filter: {role_rejected}")
+    print(f"- Duplicate listings removed: {duplicate_count}")
+    print(f"- Relevant unique listings: {len(relevant)}")
+    print(f"- Already present in saved state: {len(existing_jobs)}")
+    print(f"- New listings: {len(new_jobs)}")
+    print(
         f"Fetched {len(found)} listings; "
-
         f"relevant {len(relevant)}; new {len(new_jobs)}."
-
     )
 
-
-
-    return 1 if errors and not found else 0
+    return 1 if errors else 0
 
 
 
