@@ -171,6 +171,15 @@ class TestEligibility(unittest.TestCase):
         )
         self.assertEqual(result["graduation_year"], "unknown")
 
+    def test_2028_start_date_is_not_graduation_eligibility(self):
+        result = assess_eligibility(
+            make_job(
+                "Software Engineer Intern",
+                description="The internship starts in 2028.",
+            )
+        )
+        self.assertEqual(result["graduation_year"], "unknown")
+
 
 if __name__ == "__main__":
     unittest.main()

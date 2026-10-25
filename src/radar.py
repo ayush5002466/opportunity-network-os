@@ -582,7 +582,7 @@ def is_relevant(job, cfg):
 
 
 def calculate_priority(job, eligibility):
-    """Conservative ranking for a 2027 Indian B.Tech CSE/AI student."""
+    """Rank opportunities for a 2028 Indian B.Tech CSE/AI student."""
     score = 0
     location_fit = eligibility.get("location_fit", "unknown")
     graduation = eligibility.get("graduation_year", "unknown")
@@ -591,19 +591,17 @@ def calculate_priority(job, eligibility):
     title = normalize(job.get("title", ""))
 
     if location_fit == "india_or_remote_india":
-        score += 4
-    elif location_fit == "remote_scope_unknown":
         score += 2
-    elif location_fit == "outside_india_or_unclear":
+    elif location_fit == "remote_scope_unknown":
         score += 1
 
     if graduation == "mentions_2028":
-        score += 3
+        score += 2
     elif graduation == "possible_mismatch":
         score -= 4
 
     if experience == "early_career_signal":
-        score += 3
+        score += 1
     elif experience == "experience_requirement_mentioned":
         score -= 2
 
@@ -612,13 +610,27 @@ def calculate_priority(job, eligibility):
     elif work_auth == "sponsorship_mentioned":
         score += 1
 
-    if any(term in title for term in (
-        "software", "backend", "developer", "engineering",
-        "machine learning", "artificial intelligence",
-        "data engineer", "devops", "security engineer",
-        "platform engineer", "research engineer",
+    role_score = 0
+    if (
+        re.search(r"\bjava\b", title)
+        and re.search(r"\b(developer|engineer|engineering|development)\b", title)
+    ):
+        role_score = 3
+    elif re.search(r"\bback[\s-]?end\b", title):
+        role_score = 3
+    elif re.search(r"\bsoftware\s+(engineer|engineering|developer)\b", title):
+        role_score = 2
+    elif any(term in title for term in (
+        "software", "developer", "engineer", "engineering",
+        "machine learning", "artificial intelligence", "data",
+        "devops", "security", "platform", "research",
     )):
-        score += 2
+        role_score = 1
+
+    if re.search(r"\bintern(?:ship)?\b", title):
+        role_score += 1
+
+    score += role_score
 
     return max(0, min(10, score))
 
@@ -1875,5 +1887,4 @@ def main():
 if __name__ == "__main__":
 
     main()
-
 

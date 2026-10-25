@@ -1,6 +1,6 @@
 ﻿import unittest
 
-from src.radar import is_relevant, clean
+from src.radar import calculate_priority, is_relevant, clean
 
 
 CONFIG = {
@@ -23,6 +23,22 @@ def job(title, description=""):
 
 
 class TestRadar(unittest.TestCase):
+
+    def priority_for(self, title):
+        job_data = job(title)
+        eligibility = {
+            "location_fit": "india_or_remote_india",
+            "graduation_year": "mentions_2028",
+            "work_authorization": "unknown",
+            "experience_fit": "early_career_signal",
+        }
+        return calculate_priority(job_data, eligibility)
+
+    def test_priority_prefers_java_backend_and_software_engineering_internships(self):
+        self.assertEqual(self.priority_for("Java Developer Intern"), 9)
+        self.assertEqual(self.priority_for("Backend Developer Intern"), 9)
+        self.assertEqual(self.priority_for("Software Engineering Intern"), 8)
+        self.assertEqual(self.priority_for("Data Engineering Intern"), 7)
 
     def test_ai_research_fellow(self):
         self.assertTrue(is_relevant(job("AI Research Fellow"), CONFIG))
@@ -117,4 +133,3 @@ class TestRadar(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
-

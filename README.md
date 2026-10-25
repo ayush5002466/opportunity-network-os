@@ -107,6 +107,8 @@ The tracker alone will not make you stand out. Use it to build evidence:
 
 The local tracker database is created at `data/tracker.db`. Public listing state is stored in `data/jobs.json`. The first run may return many leads. Keyword filters are deliberately explainable and imperfect; inspect official postings before applying.
 
+Priority scores (0-10) favor India-based listings, a stated 2028 graduation signal, early-career roles, and Java development, backend development, and software engineering internships. Scores are triage aids, not confirmation of eligibility. Existing saved listings are not rescored automatically; run `python -m src.radar refresh-scores` to update scores in `data/jobs.json`. This does not modify the SQLite application tracker.
+
 
 ## Contributing and license
 
