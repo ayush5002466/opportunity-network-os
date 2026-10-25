@@ -581,8 +581,12 @@ def is_relevant(job, cfg):
 
 
 
-def calculate_priority(job, eligibility):
+def calculate_priority(job, eligibility, cfg=None):
     """Rank opportunities for a 2028 Indian B.Tech CSE/AI student."""
+    cfg = cfg or load_config()
+    if not is_relevant(job, cfg):
+        return 0
+
     score = 0
     location_fit = eligibility.get("location_fit", "unknown")
     graduation = eligibility.get("graduation_year", "unknown")
@@ -684,37 +688,29 @@ def assess_eligibility(job):
         result["reasons"].append("Missing title or official listing URL.")
         return result
 
-    # Match explicit year signals in titles, and graduation-specific
-    # wording in descriptions to avoid unrelated dates.
-    title_year_2028 = re.search(
-        r"\b2028\b|\b(?:summer|winter|fall|spring)\s+['']?28\b",
-        title,
-        re.IGNORECASE,
-    )
-
-    graduation_2028 = re.search(
-        r"\bclass of\s*['']?2028\b|"
-        r"\b(?:graduat(?:e|es|ed|ing|ion)|class)\b.{0,60}\b2028\b|"
-        r"\b2028\b.{0,60}\b(?:graduat(?:e|es|ed|ing|ion)|class)\b",
+    graduation_year_pattern = r"(?:19|20)\d{2}"
+    graduation_year_matches = re.finditer(
+        rf"\bclass of\s*['']?({graduation_year_pattern})\b|"
+        rf"\b(?:graduat(?:e|es|ed|ing|ion)|class)\b.{{0,60}}\b"
+        rf"({graduation_year_pattern})\b|"
+        rf"\b({graduation_year_pattern})\b.{{0,60}}\b"
+        rf"(?:graduat(?:e|es|ed|ing|ion)|class)\b",
         description,
         re.IGNORECASE,
     )
 
-    conflicting_graduation = re.search(
-        r"\bclass of\s*['']?(2025|2026|2027|2029)\b|"
-        r"\b(?:graduat(?:e|es|ed|ing|ion)|class)\b.{0,60}\b(2025|2026|2027|2029)\b|"
-        r"\b(2025|2026|2027|2029)\b.{0,60}\b(?:graduat(?:e|es|ed|ing|ion)|class)\b",
-        description,
-        re.IGNORECASE,
-    )
+    graduation_years = {
+        next(year for year in match.groups() if year)
+        for match in graduation_year_matches
+    }
 
-    if title_year_2028 or graduation_2028:
+    if "2028" in graduation_years:
         result["graduation_year"] = "mentions_2028"
         result["reasons"].append(
-            "A 2028 graduation signal appears in the title or criteria; "
+            "A 2028 graduation signal appears in the criteria; "
             "confirm the official eligibility requirements."
         )
-    elif conflicting_graduation:
+    elif graduation_years:
         result["graduation_year"] = "possible_mismatch"
         result["reasons"].append(
             "The listing may target a different graduation year; "
@@ -1124,7 +1120,7 @@ def discover():
 
             "eligibility": assess_eligibility(job),
             "priority_score": calculate_priority(
-                job, assess_eligibility(job)
+                job, assess_eligibility(job), cfg
             ),
 
         }
@@ -1321,13 +1317,16 @@ def refresh_priority_scores():
     if not backup.exists():
         backup.write_text(STATE.read_text(encoding="utf-8"), encoding="utf-8")
 
+    cfg = load_config()
     count = 0
     for job in state.values():
         if not isinstance(job, dict):
             continue
         eligibility = assess_eligibility(job)
         job["eligibility"] = eligibility
-        job["priority_score"] = calculate_priority(job, eligibility)
+        job["priority_score"] = calculate_priority(
+            job, eligibility, cfg
+        )
         count += 1
 
     STATE.write_text(
@@ -1887,4 +1886,3 @@ def main():
 if __name__ == "__main__":
 
     main()
-

@@ -32,13 +32,25 @@ class TestRadar(unittest.TestCase):
             "work_authorization": "unknown",
             "experience_fit": "early_career_signal",
         }
-        return calculate_priority(job_data, eligibility)
+        return calculate_priority(job_data, eligibility, CONFIG)
 
     def test_priority_prefers_java_backend_and_software_engineering_internships(self):
         self.assertEqual(self.priority_for("Java Developer Intern"), 9)
         self.assertEqual(self.priority_for("Backend Developer Intern"), 9)
         self.assertEqual(self.priority_for("Software Engineering Intern"), 8)
         self.assertEqual(self.priority_for("Data Engineering Intern"), 7)
+
+    def test_excluded_roles_receive_no_priority(self):
+        for title in (
+            "Senior Java Developer Intern",
+            "Staff Backend Engineer Intern",
+            "Principal Software Engineer Intern",
+            "Technical Recruiter Intern",
+            "Engineering Manager Intern",
+        ):
+            with self.subTest(title=title):
+                self.assertFalse(is_relevant(job(title), CONFIG))
+                self.assertEqual(self.priority_for(title), 0)
 
     def test_ai_research_fellow(self):
         self.assertTrue(is_relevant(job("AI Research Fellow"), CONFIG))

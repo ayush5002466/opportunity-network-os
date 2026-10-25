@@ -28,11 +28,11 @@ class TestEligibility(unittest.TestCase):
         self.assertIn("work_authorization", result)
         self.assertIn("experience_fit", result)
 
-    def test_2028_mention_is_recorded_not_assumed_verified(self):
+    def test_2028_in_title_alone_is_not_assumed_to_be_graduation_year(self):
         result = assess_eligibility(
             make_job("Software Engineer Intern (2028)")
         )
-        self.assertEqual(result["graduation_year"], "mentions_2028")
+        self.assertEqual(result["graduation_year"], "unknown")
         self.assertEqual(result["status"], "needs_review")
 
     def test_india_location_is_recognized(self):
@@ -117,11 +117,11 @@ class TestEligibility(unittest.TestCase):
         )
         self.assertEqual(result["graduation_year"], "unknown")
 
-    def test_2028_internship_title_is_recognized(self):
+    def test_2028_internship_title_alone_is_not_graduation_eligibility(self):
         result = assess_eligibility(
             make_job("Software Engineer Intern (2028)")
         )
-        self.assertEqual(result["graduation_year"], "mentions_2028")
+        self.assertEqual(result["graduation_year"], "unknown")
 
     def test_conflicting_graduation_year_is_flagged(self):
         result = assess_eligibility(
@@ -179,6 +179,24 @@ class TestEligibility(unittest.TestCase):
             )
         )
         self.assertEqual(result["graduation_year"], "unknown")
+
+    def test_explicit_2030_graduation_requirement_is_a_mismatch(self):
+        result = assess_eligibility(
+            make_job(
+                description="Applicants must graduate in 2030.",
+            )
+        )
+        self.assertEqual(result["graduation_year"], "possible_mismatch")
+        self.assertEqual(result["status"], "likely_ineligible")
+
+    def test_2030_deadline_or_internship_start_is_not_graduation_requirement(self):
+        for description in (
+            "Applications close in 2030.",
+            "The internship starts in 2030.",
+        ):
+            with self.subTest(description=description):
+                result = assess_eligibility(make_job(description=description))
+                self.assertEqual(result["graduation_year"], "unknown")
 
 
 if __name__ == "__main__":
