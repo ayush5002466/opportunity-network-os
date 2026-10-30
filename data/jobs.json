@@ -319,7 +319,7 @@
     "title": "Software Engineering Intern - Summer '27",
     "location": "Hybrid - San Francisco",
     "url": "https://job-boards.greenhouse.io/vercel/jobs/6181759004",
-    "updated_at": "2026-10-26T20:37:20-04:00",
+    "updated_at": "2026-10-30T14:45:41-04:00",
     "source": "Greenhouse",
     "eligibility": {
       "status": "needs_review",
@@ -583,7 +583,7 @@
     "title": "Software Engineering Intern - Winter '27",
     "location": "Hybrid - San Francisco",
     "url": "https://job-boards.greenhouse.io/vercel/jobs/6181755004",
-    "updated_at": "2026-10-28T13:41:20-04:00",
+    "updated_at": "2026-10-30T14:45:41-04:00",
     "source": "Greenhouse",
     "eligibility": {
       "status": "needs_review",
@@ -930,6 +930,54 @@
       "experience_fit": "early_career_signal",
       "reasons": [
         "No clear graduation-year requirement found.",
+        "Confirm the work location and whether applicants residing in India are accepted.",
+        "Work authorization or visa sponsorship is not clearly established.",
+        "The title or listing suggests an early-career role; confirm degree, experience, and enrollment requirements."
+      ]
+    },
+    "priority_score": 5
+  },
+  "gh:stripe:8333074": {
+    "id": "gh:stripe:8333074",
+    "company": "Stripe",
+    "title": "Master's Machine Learning Engineer, Intern",
+    "location": "San Francisco, New York City, Seattle",
+    "url": "https://stripe.com/jobs/search?gh_jid=8333074",
+    "description": "<h2><strong>who we are</strong></h2> <h3><strong>about stripe</strong></h3> <p>stripe is a financial infrastructure platform for businesses. millions of companies—from the world’s largest enterprises to the most ambitious startups—use stripe to accept payments, grow their revenue, and accelerate new business opportunities. our mission is to increase the gdp of the internet, and we have a staggering amount of work ahead. that means you have an unprecedented opportunity to put the global economy within everyone’s reach while doing the most important work of your career.</p> <h2><strong>what you’ll do</strong></h2> <h3><strong>about the internship</strong></h3> <p>stripe's applied ml, data science, risk, and payments organizations are excited to offer master's machine learning engineering internships for the summer of 2027. this is an exceptional opportunity to contribute to critical projects that directly enhance stripe's suite of products, focusing on areas such as foundation models used for dozens of tasks e.g. fraud detection, enhanced support, and predicting user behavior.</p> <p>as an intern, you'll tackle challenging problems at the intersection of finance, technology, and data. you'll have the chance to work on creative projects like the stripe assistant and the stripe foundation model, which leverage machine learning to revolutionize how businesses interact with financial services and data.</p> <h3><strong>responsibilities</strong></h3> <ul> <li>develop and deploy large-scale machine learning systems that drive significant business value across various domains.</li> <li>engage in the end-to-end process of designing, training, improving, and launching machine learning models.</li> <li>write production-scale ml models that will be deployed to help stripe enable economic infrastructure access for a diverse range of businesses globally.</li> <li>collaborate across teams to incorporate feedback and proactively seek solutions to challenges.</li> <li>rapidly learn new technologies and approaches, demonstrating a strong ability to ask insightful questions and communicate the status of your work effectively.</li> </ul> <h2><strong>who you are</strong></h2> <h3><strong>minimum requirements</strong></h3> <ul> <li>a deep understanding of computer science, obtained through the pursuit of a master's degree in computer science, machine learning, or a closely related field, with the expectation of graduating in winter 2027 or spring/summer 2028.</li> <li>practical experience with programming and machine learning, evidenced by projects, classwork, or research. familiarity with languages such as&nbsp;python, scala, spark and libraries such as pandas, numpy, and scikit-learn.</li> <li>expertise in areas of machine learning such as supervised and unsupervised learning techniques, ml operations, and possibly experience in large language models or reinforcement learning.</li> <li>demonstrated ability to work on collaborative projects, with experience in receiving and applying feedback from various stakeholders.</li> <li>a proactive approach to learning unfamiliar systems and a demonstrated ability to understand complex systems independently.</li> <li> <div class=\"_1zh- _8lfz\"> <div class=\"_38io _30jd _9aou\"> <div class=\"_h46 _8lfz\"> <div class=\"_1n-_ _6hy- _8lf-\">intent to return to the degree-program after the completion of the internship/co-op.</div> </div> </div> </div> </li> </ul> <h3><strong>preferred qualifications</strong></h3> <p>you might also have:</p> <ul> <li>two years of university education or equivalent experience, with in-depth knowledge in specific domains of machine learning.</li> <li>published and presented peer-reviewed articles in top-tier venues.</li> <li>experience in writing high-quality pull requests, maintaining good test coverage, and completing projects with minimal defects.</li> <li>familiarity with navigating new codebases and managing work across different programming languages.</li> <li>excellent written communication skills to clearly articulate your work to both team members and wider stripe audiences.</li> </ul> <h3><strong>application requirements</strong></h3> <p>please submit the following with your application:</p> <ul> <li>a detailed resume or linkedin profile showcasing your work history.</li> <li>examples of relevant work and your approach to learning, such as github repositories, stackoverflow contributions, or other project portfolios.</li> </ul> <p>join us for an unforgettable summer internship and help shape the future of global commerce. at stripe, you won't just be working on theoretical projects; you'll make a tangible impact on the world's economic infrastructure.</p>",
+    "updated_at": "2026-10-30T12:19:26-04:00",
+    "source": "Greenhouse",
+    "eligibility": {
+      "status": "needs_review",
+      "graduation_year": "mentions_2028",
+      "location_fit": "outside_india_or_unclear",
+      "work_authorization": "unknown",
+      "experience_fit": "early_career_signal",
+      "reasons": [
+        "A 2028 graduation signal appears in the criteria; confirm the official eligibility requirements.",
+        "Confirm the work location and whether applicants residing in India are accepted.",
+        "Work authorization or visa sponsorship is not clearly established.",
+        "The title or listing suggests an early-career role; confirm degree, experience, and enrollment requirements."
+      ]
+    },
+    "priority_score": 5
+  },
+  "gh:stripe:8333122": {
+    "id": "gh:stripe:8333122",
+    "company": "Stripe",
+    "title": "Master's Machine Learning Engineer, Intern",
+    "location": "Toronto",
+    "url": "https://stripe.com/jobs/search?gh_jid=8333122",
+    "description": "<h2><strong>who we are</strong></h2> <h3><strong>about stripe</strong></h3> <p>stripe is a financial infrastructure platform for businesses. millions of companies—from the world’s largest enterprises to the most ambitious startups—use stripe to accept payments, grow their revenue, and accelerate new business opportunities. our mission is to increase the gdp of the internet, and we have a staggering amount of work ahead. that means you have an unprecedented opportunity to put the global economy within everyone’s reach while doing the most important work of your career.</p> <h2><strong>what you’ll do</strong></h2> <h3><strong>about the internship</strong></h3> <p>stripe's applied ml, data science, risk, and payments organizations are excited to offer master's machine learning engineering internships for the summer of 2027. this is an exceptional opportunity to contribute to critical projects that directly enhance stripe's suite of products, focusing on areas such as foundation models used for dozens of tasks e.g. fraud detection, enhanced support, and predicting user behavior.</p> <p>as an intern, you'll tackle challenging problems at the intersection of finance, technology, and data. you'll have the chance to work on creative projects like the stripe assistant and the stripe foundation model, which leverage machine learning to revolutionize how businesses interact with financial services and data.</p> <h3><strong>responsibilities</strong></h3> <ul> <li>develop and deploy large-scale machine learning systems that drive significant business value across various domains.</li> <li>engage in the end-to-end process of designing, training, improving, and launching machine learning models.</li> <li>write production-scale ml models that will be deployed to help stripe enable economic infrastructure access for a diverse range of businesses globally.</li> <li>collaborate across teams to incorporate feedback and proactively seek solutions to challenges.</li> <li>rapidly learn new technologies and approaches, demonstrating a strong ability to ask insightful questions and communicate the status of your work effectively.</li> </ul> <h2><strong>who you are</strong></h2> <h3><strong>minimum requirements</strong></h3> <ul> <li>a deep understanding of computer science, obtained through the pursuit of a master's degree in computer science, machine learning, or a closely related field, with the expectation of graduating in winter 2027 or spring/summer 2028.</li> <li>practical experience with programming and machine learning, evidenced by projects, classwork, or research. familiarity with languages such as&nbsp;python, scala, spark and libraries such as pandas, numpy, and scikit-learn.</li> <li>expertise in areas of machine learning such as supervised and unsupervised learning techniques, ml operations, and possibly experience in large language models or reinforcement learning.</li> <li>demonstrated ability to work on collaborative projects, with experience in receiving and applying feedback from various stakeholders.</li> <li>a proactive approach to learning unfamiliar systems and a demonstrated ability to understand complex systems independently.</li> <li> <div class=\"_1zh- _8lfz\"> <div class=\"_38io _30jd _9aou\"> <div class=\"_h46 _8lfz\"> <div class=\"_1n-_ _6hy- _8lf-\">intent to return to the degree-program after the completion of the internship/co-op.</div> </div> </div> </div> </li> </ul> <h3><strong>preferred qualifications</strong></h3> <p>you might also have:</p> <ul> <li>two years of university education or equivalent experience, with in-depth knowledge in specific domains of machine learning.</li> <li>published and presented peer-reviewed articles in top-tier venues.</li> <li>experience in writing high-quality pull requests, maintaining good test coverage, and completing projects with minimal defects.</li> <li>familiarity with navigating new codebases and managing work across different programming languages.</li> <li>excellent written communication skills to clearly articulate your work to both team members and wider stripe audiences.</li> </ul> <h3><strong>application requirements</strong></h3> <p>please submit the following with your application:</p> <ul> <li>a detailed resume or linkedin profile showcasing your work history.</li> <li>examples of relevant work and your approach to learning, such as github repositories, stackoverflow contributions, or other project portfolios.</li> </ul> <p>join us for an unforgettable summer internship and help shape the future of global commerce. at stripe, you won't just be working on theoretical projects; you'll make a tangible impact on the world's economic infrastructure.</p>",
+    "updated_at": "2026-10-30T16:24:15-04:00",
+    "source": "Greenhouse",
+    "eligibility": {
+      "status": "needs_review",
+      "graduation_year": "mentions_2028",
+      "location_fit": "outside_india_or_unclear",
+      "work_authorization": "unknown",
+      "experience_fit": "early_career_signal",
+      "reasons": [
+        "A 2028 graduation signal appears in the criteria; confirm the official eligibility requirements.",
         "Confirm the work location and whether applicants residing in India are accepted.",
         "Work authorization or visa sponsorship is not clearly established.",
         "The title or listing suggests an early-career role; confirm degree, experience, and enrollment requirements."
