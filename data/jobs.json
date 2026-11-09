@@ -460,15 +460,15 @@
   "gh:cloudflare:8245211": {
     "id": "gh:cloudflare:8245211",
     "company": "Cloudflare",
-    "title": "Software Engineer Intern (2027)",
+    "title": "Software Engineer Intern (2027) - London, UK",
     "location": "In-Office",
     "url": "https://boards.greenhouse.io/cloudflare/jobs/8245211?gh_jid=8245211",
-    "updated_at": "2026-10-30T18:16:11-04:00",
+    "updated_at": "2026-11-09T09:25:38-05:00",
     "source": "Greenhouse",
     "eligibility": {
       "status": "needs_review",
       "graduation_year": "unknown",
-      "location_fit": "location_unknown",
+      "location_fit": "outside_india_or_unclear",
       "work_authorization": "restriction_mentioned",
       "experience_fit": "early_career_signal",
       "reasons": [
